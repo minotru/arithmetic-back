@@ -1,0 +1,26 @@
+{
+  "name": "back",
+  "version": "1.0.0",
+  "description": "backend for mental arithmetic learning app",
+  "main": "index.js",
+  "scripts": {
+    "serve": "node dist/index.js",
+    "build": "tsc",
+    "start": "npm run build && npm run serve"
+  },
+  "author": "Simon Karasik",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^6.0.0",
+    "express": "^4.16.3"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "typescript": "^2.9.2",
+    "ts-node": "~5.0.1",
+    "tslint-config-airbnb": "^5.9.2",
+    "tslint": "~5.9.1"
+  }
+}
