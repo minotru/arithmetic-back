@@ -4,9 +4,10 @@
   "description": "backend for mental arithmetic learning app",
   "main": "index.js",
   "scripts": {
-    "serve": "node dist/index.js",
+    "serve": "node --require dotenv/config dist/index.js",
     "build": "tsc",
-    "start": "npm run build && npm run serve"
+    "start": "npm run build && npm run serve",
+    "debug": "node --require dotenv/config --inspect dist/index.js"
   },
   "author": "Simon Karasik",
   "license": "ISC",
@@ -21,6 +22,8 @@
     "typescript": "^2.9.2",
     "ts-node": "~5.0.1",
     "tslint-config-airbnb": "^5.9.2",
-    "tslint": "~5.9.1"
+    "tslint": "~5.9.1",
+    "@types/node": "^10.5.2",
+    "@types/dotenv": "^4.0.3"
   }
 }
