@@ -1,17 +1,25 @@
-import { config } from 'dotenv';
-config();
-import { TaskGenerator, TaskGeneratorConfig } from './tasks';
-import { levels } from './levels';
+// import { TaskGenerator, TaskGeneratorConfig } from './tasks';
+import { readFileSync } from 'fs';
+// import { inspect } from 'util';
+// import { Level, LevelTopic, }
 
-const taskGeneratorConfig: TaskGeneratorConfig = {
-  digitsCnt: 2,
-  topic: 'simple',
-  operationsCnt: 5,
-  level: 3,
-};
+// const taskGeneratorConfig: TaskGeneratorConfig = {
+//   digitsCnt: 2,
+//   topic: 'simple',
+//   operationsCnt: 5,
+//   level: 3,
+// };
 
-const taskGenerator = new TaskGenerator(taskGeneratorConfig);
+function loadLevelsMap(): Object {
+  const content: string = readFileSync('levelsMap.json').toString();
+  return JSON.parse(content);
+}
 
-console.log('hello from ts');
+// const taskGenerator = new TaskGenerator(taskGeneratorConfig);
 
-console.log(levels);
+// console.log('hello from ts');
+// console.log(inspect(loadLevelsMap(), false, null));
+
+// process.stdout.write(loadLevelsMap().to);
+
+// console.log(levels);

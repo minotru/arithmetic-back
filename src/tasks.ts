@@ -1,20 +1,18 @@
-export interface TaskGeneratorConfig {
+import { TopicName } from './levels';
+
+export interface TaskConfig {
   digitsCnt: number;
-  topic: string;
+  topic: TopicName;
   level: number;
   operationsCnt: number;
 }
 
-export enum OperationType {
-  PLUS = '+',
-  MINUS = '-',
-  MULTIPLY = '*',
-  DIVIDE = '/',
+export interface Task {
+  operations: number[];
 }
 
-export interface Task {
-  pipe: number[];
-}
+
+// export function generateTask(taskConfig: TaskConfig, levelsMap: )
 
 // function checkTask(task: Task, answer: number, remainder: number = 0): boolean {
 //   switch (task.operation) {
@@ -30,8 +28,8 @@ export interface Task {
 //   }
 // }
 
-export class TaskGenerator {
-  constructor(private config: TaskGeneratorConfig) {
-  }
+// export class TaskGenerator {
+//   constructor(private config: TaskGeneratorConfig) {
+//   }
 
-}
+// }
