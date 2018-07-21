@@ -13,9 +13,17 @@ export enum TopicName {
   DIVISION = 'division',
 }
 
+export enum RestrictionsType {
+  ALLOWED = 'allowed',
+  FORBIDDEN = 'forbidden',
+}
+
 export declare type Level = {
   [operation: string]: {
-    [leftValue: string]: string[],
+    [leftValue: string]: {
+      restrictionsType: RestrictionsType,
+      restrictions: string[],
+    },
   },
 };
 export declare type Topic = { [levelName: string]: Level };
@@ -23,11 +31,11 @@ export declare type GameMap = { [topic: string]: Topic };
 
 let gameMap: GameMap = null;
 
-function setGameMap(newGameMap: GameMap) {
+export function setGameMap(newGameMap: GameMap) {
   gameMap = newGameMap;
 }
 
-function getGameMap(): GameMap {
+export function getGameMap(): GameMap {
   return gameMap;
 }
 
@@ -52,17 +60,7 @@ function isInRange(value: number, range: string): boolean {
   return false;
 }
 
-export function isFitsRange(value: number, range: string): boolean {
-  const isInverted: boolean = range[0] === '!';
-  const isInRangeFlag: boolean =
-    isInRange(value, isInverted ? range.substr(1) : range);
-  if (isInverted) {
-    return !isInRangeFlag;
-  }
-  return isInRangeFlag;
-}
-
-function isAllowedOperation(
+export function isAllowedOperation(
   topicName: TopicName,
   levelName: string,
   currentValue: number,
@@ -76,6 +74,12 @@ function isAllowedOperation(
   if (!level[operation][currentValue]) {
     return true;
   }
-  return level[operation][currentValue]
-    .every(range => isFitsRange(operand, range));
+  const restrictionsType = level[operation][currentValue].restrictionsType;
+  const restrictions = level[operation][currentValue].restrictions;
+  switch (restrictionsType) {
+    case RestrictionsType.ALLOWED:
+      return restrictions.some(range => isInRange(operand, range));
+    case RestrictionsType.FORBIDDEN:
+      return !restrictions.some(range => isInRange(operand, range));
+  }
 }
