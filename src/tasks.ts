@@ -24,7 +24,7 @@ function generateNumber(digitsCnt: number, maxDigit: number) {
   let res: number = 0;
   for (let i = 0; i < digitsCnt; i += 1) {
     let nextDigit = Math.ceil(Math.random() * maxDigit);
-    if (nextDigit === 0 && i === 0 && digitsCnt === 1) {
+    if (nextDigit === 0 && i === 0) {
       nextDigit += 1;
     }
     res = res * 10 + nextDigit;
@@ -43,6 +43,7 @@ function generateOperation(
   const plusOrMinus: OperationType[] = [OperationType.PLUS, OperationType.MINUS];
   const mulOrDiv: OperationType[] = [OperationType.MULTIPLY, OperationType.DIVIDE];
   let isMapAllowedOperation: boolean;
+  let isAllowedResult: boolean;
   do {
     const wildcard = Math.round(Math.random());
     if (topicName in [TopicName.MULTIPLICATION, TopicName.DIVISION]) {
@@ -59,7 +60,9 @@ function generateOperation(
       operationType,
       operand,
     );
-  } while (!isMapAllowedOperation || doOperation(currentValue, operand, operationType) < 0);
+    const result = doOperation(currentValue, operand, operationType);
+    isAllowedResult = result > 0 && result.toString().length === digitsCnt;
+  } while (!isMapAllowedOperation || !isAllowedResult);
 
   return {
     operationType,
