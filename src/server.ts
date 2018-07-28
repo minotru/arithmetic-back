@@ -1,4 +1,3 @@
-// import { TaskGenerator, TaskGeneratorConfig } from './tasks';
 import { readFileSync } from 'fs';
 import {
   GameMap,
@@ -7,6 +6,8 @@ import {
   setGameMap,
 }  from './levels';
 import { generateTask, TaskConfig, Task } from './tasks';
+import express from 'express';
+import { router } from './routes';
 
 function loadGameMap(): GameMap {
   const content: string = readFileSync('gameMap.json').toString();
@@ -26,3 +27,7 @@ const task: Task = generateTask(taskConfig);
 console.log('operations:');
 console.log(JSON.stringify(task.operations));
 console.log('answer:', task.answer);
+
+const app = express();
+app.use(router);
+app.listen(process.env.PORT);

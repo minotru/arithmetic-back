@@ -42,6 +42,7 @@ function generateOperation(
   let operand: number;
   const plusOrMinus: OperationType[] = [OperationType.PLUS, OperationType.MINUS];
   const mulOrDiv: OperationType[] = [OperationType.MULTIPLY, OperationType.DIVIDE];
+  let isMapAllowedOperation: boolean;
   do {
     const wildcard = Math.round(Math.random());
     if (topicName in [TopicName.MULTIPLICATION, TopicName.DIVISION]) {
@@ -50,13 +51,15 @@ function generateOperation(
       operationType = plusOrMinus[wildcard];
     }
     operand = generateNumber(digitsCnt, level);
-  } while (!isAllowedOperation(
-    topicName,
-    level.toString(),
-    currentValue,
-    operationType,
-    operand,
-  ));
+
+    isMapAllowedOperation = isAllowedOperation(
+      topicName,
+      level.toString(),
+      currentValue,
+      operationType,
+      operand,
+    );
+  } while (!isMapAllowedOperation || doOperation(currentValue, operand, operationType) < 0);
 
   return {
     operationType,
