@@ -30,4 +30,4 @@ console.log('answer:', task.answer);
 
 const app = express();
 app.use(router);
-app.listen(process.env.PORT);
+app.listen(process.env.SERVER_PORT);

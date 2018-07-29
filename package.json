@@ -20,7 +20,12 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^6.0.0",
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "mongoose": "^4.13.11",
+    "body-parser": "^1.18.3",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "connect-mongo": "^2.0.1"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
@@ -33,6 +38,7 @@
     "@types/node": "^10.5.2",
     "@types/dotenv": "^4.0.3",
     "@types/express": "^4.16.0",
+    "@types/mongoose": "^5.2.3",
     "concurrently": "^3.5.1",
     "jest": "^22.0.4",
     "nodemon": "^1.13.0",
