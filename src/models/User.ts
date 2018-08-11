@@ -1,22 +1,10 @@
-import { Document, Schema, Model, model } from 'mongoose';
+import mongoose from 'mongoose';
+import { UserRole, IUser } from '../interfaces';
 const secret = process.env.SESSION_SECRET;
 
-export enum UserRole {
-  STUDENT = 'STUDENT',
-  ADMIN = 'ADMIN',
-}
+export declare type IUserModel = mongoose.Document & IUser;
 
-export interface UserModel extends Document {
-  login?: string;
-  passwordHash?: string;
-  role?: UserRole;
-  name?: string;
-  surname?: string;
-  isActive?: boolean;
-  phoneNumber?: string;
-}
-
-const userSchema = new Schema({
+const userSchema = new mongoose.Schema({
   login: {
     type: String,
     unique: true,
@@ -32,4 +20,5 @@ const userSchema = new Schema({
   phoneNumber: String,
 });
 
-export const User: Model<UserModel> =  model<UserModel>('User', userSchema);
+const User: mongoose.Model<IUserModel> =  mongoose.model<IUserModel>('User', userSchema);
+export default User;

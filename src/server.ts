@@ -1,33 +1,28 @@
 import { readFileSync } from 'fs';
-import {
-  GameMap,
-  OperationType,
-  TopicName,
-  setGameMap,
-}  from './levels';
-import { generateTask, TaskConfig, Task } from './tasks';
 import express from 'express';
 import { router } from './routes';
+import mongoose from 'mongoose';
+import { default as User, IUserModel } from './models/User';
+import { IUser, UserRole } from './interfaces';
 
-function loadGameMap(): GameMap {
-  const content: string = readFileSync('gameMap.json').toString();
-  return <GameMap>JSON.parse(content);
-}
+// function loadGameMap(): GameMap {
+//   const content: string = readFileSync('gameMap.json').toString();
+//   return <GameMap>JSON.parse(content);
+// }
 
-setGameMap(loadGameMap());
+// setGameMap(loadGameMap());
 
-const taskConfig: TaskConfig = {
-  digitsCnt: 2,
-  topic: TopicName.SIMPLE,
-  operationsCnt: 5,
-  level: 3,
-  speed: 0.8,
+// const app = express();
+// app.use(router);
+// app.listen(process.env.SERVER_PORT);
+
+mongoose.connect(process.env.MONGODB_URI);
+const userObj: IUser = {
+  login: 'user1',
+  passwordHash: '12345678',
+  name: 'Simon',
+  surname: 'Karasik',
+  phoneNumber: '+375298735450',
+  role: UserRole.ADMIN,
+  isActive: true,
 };
-const task: Task = generateTask(taskConfig);
-console.log('operations:');
-console.log(JSON.stringify(task.operations));
-console.log('answer:', task.answer);
-
-const app = express();
-app.use(router);
-app.listen(process.env.SERVER_PORT);

@@ -1,24 +1,11 @@
-import { TopicName, isAllowedOperation, OperationType } from './levels';
-
-export interface TaskConfig {
-  digitsCnt: number;
-  topic: TopicName;
-  level: number;
-  operationsCnt: number;
-  speed: number;
-}
-
-export interface Operation {
-  operationType: OperationType;
-  operand: number;
-}
-
-export interface Task {
-  taskConfig: TaskConfig;
-  operations: Operation[];
-  answer: number;
-  isCorrect?: boolean;
-}
+import {
+  TopicName,
+  OperationType,
+  IOperation,
+  ITask,
+  ITaskConfig,
+} from './interfaces';
+import { isAllowedOperation } from './levels';
 
 function generateNumber(digitsCnt: number, maxDigit: number) {
   let res: number = 0;
@@ -37,7 +24,7 @@ function generateOperation(
   level: number,
   digitsCnt: number,
   currentValue: number,
-): Operation {
+): IOperation {
   let operationType: OperationType;
   let operand: number;
   const plusOrMinus: OperationType[] = [OperationType.PLUS, OperationType.MINUS];
@@ -90,8 +77,11 @@ function doOperation(
   }
 }
 
-export function generateTask(taskConfig: TaskConfig): Task {
-  const operations: Operation[] = [];
+export function generateTaskOperations(taskConfig: ITaskConfig): {
+  operations: IOperation[],
+  answer: number,
+} {
+  const operations: IOperation[] = [];
   let currentValue: number = 0;
   operations.push({
     operationType: OperationType.PLUS,
@@ -110,7 +100,6 @@ export function generateTask(taskConfig: TaskConfig): Task {
   }
 
   return {
-    taskConfig,
     operations,
     answer: currentValue,
   };

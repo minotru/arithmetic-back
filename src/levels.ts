@@ -1,33 +1,11 @@
-export enum OperationType {
-  PLUS = '+',
-  MINUS = '-',
-  MULTIPLY = '*',
-  DIVIDE = '/',
-}
-
-export enum TopicName {
-  SIMPLE = 'simple',
-  BROTHER = 'brother',
-  FRIEND_AND_BROTHER = 'friend-plus-brother',
-  MULTIPLICATION = 'multiplication',
-  DIVISION = 'division',
-}
-
-export enum RestrictionsType {
-  ALLOWED = 'allowed',
-  FORBIDDEN = 'forbidden',
-}
-
-export declare type Level = {
-  [operation: string]: {
-    [leftValue: string]: {
-      restrictionsType: RestrictionsType,
-      restrictions: string[],
-    },
-  },
-};
-export declare type Topic = { [levelName: string]: Level };
-export declare type GameMap = { [topic: string]: Topic };
+import {
+  GameMap,
+  TopicName,
+  ILevel,
+  OperationType,
+  IOperation,
+  RestrictionsType,
+} from './interfaces/task';
 
 let gameMap: GameMap = null;
 
@@ -39,7 +17,7 @@ export function getGameMap(): GameMap {
   return gameMap;
 }
 
-function getLevel(topicName: TopicName, levelName: string): Level {
+function getLevel(topicName: TopicName, levelName: string): ILevel {
   if (!gameMap[topicName]) {
     throw Error(`There is no topic ${topicName} in game map`);
   }
@@ -67,7 +45,7 @@ export function isAllowedOperation(
   operation: OperationType,
   operand: number,
 ): boolean {
-  const level: Level = getLevel(topicName, levelName);
+  const level: ILevel = getLevel(topicName, levelName);
   if (!level[operation]) {
     return false;
   }
