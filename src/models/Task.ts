@@ -1,4 +1,4 @@
-import { Document, Schema, Model, Types, model } from 'mongoose';
+import { Document, Schema, Model, model, SchemaType } from 'mongoose';
 import { ITask } from '../interfaces';
 
 export type ITaskModel = Document & ITask;
@@ -13,7 +13,10 @@ const taskSchema = new Schema({
   },
   isCorrect: Boolean,
   answer: Number,
-  userId: Types.ObjectId,
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  },
 });
 
 const Task: Model<ITaskModel> = model<ITaskModel>('Task', taskSchema);
