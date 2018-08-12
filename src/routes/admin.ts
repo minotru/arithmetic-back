@@ -43,4 +43,18 @@ router.get('/users/:id', (req, res) => {
     .catch(err => res.send(err));
 });
 
+router.put('/users/:id', (req, res) => {
+  const changes = <IUser>req.body;
+  const userId = <string>req.params['id'];
+  console.log(changes);
+  User.findByIdAndUpdate(userId, changes, { new: true })
+    .then((user) => {
+      if (user) {
+        return res.send(user);
+      }
+      res.sendStatus(404);
+    })
+    .catch(err => res.send(err));
+});
+
 export default router;
