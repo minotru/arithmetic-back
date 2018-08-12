@@ -10,7 +10,7 @@ import { isAllowedOperation } from './gameMap';
 function generateNumber(digitsCnt: number, maxDigit: number) {
   let res: number = 0;
   for (let i = 0; i < digitsCnt; i += 1) {
-    let nextDigit = Math.ceil(Math.random() * maxDigit);
+    let nextDigit = Math.round(Math.random() * maxDigit);
     if (nextDigit === 0 && i === 0) {
       nextDigit += 1;
     }
@@ -18,14 +18,6 @@ function generateNumber(digitsCnt: number, maxDigit: number) {
   }
   return res;
 }
-
-type AllowedOperationChecker = (
-  topic: string,
-  level: string,
-  value: number,
-  operation: OperationType,
-  operand: number,
-) => boolean;
 
 function generateOperation(
   topicName: TopicName,

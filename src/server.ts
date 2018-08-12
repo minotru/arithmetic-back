@@ -10,13 +10,14 @@ import { router } from './routes';
 import { User, IUserModel } from './models/User';
 
 import './config/passport';
+import { IGameMap } from './interfaces';
+import { readFileSync } from 'fs';
+import { setGameMap } from './utils/gameMap';
 
-// function loadGameMap(): GameMap {
-//   const content: string = readFileSync('gameMap.json').toString();
-//   return <GameMap>JSON.parse(content);
-// }
-
-// setGameMap(loadGameMap());
+function loadGameMap(): IGameMap {
+  const content: string = readFileSync('gameMap.json').toString();
+  return <IGameMap>JSON.parse(content);
+}
 
 mongoose.Promise = Promise;
 const MongoStore = connectMongo(expressSession);
@@ -39,6 +40,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(logger);
 app.use(router);
+
+setGameMap(loadGameMap());
 
 app.listen(process.env.SERVER_PORT, () => {
   console.log(`server is listening on ${process.env.SERVER_PORT}`);
