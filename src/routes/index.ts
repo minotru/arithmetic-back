@@ -25,7 +25,11 @@ function isAuthenticated(req: Request, res: Response, next: NextFunction) {
   res.sendStatus(401);
 }
 
-router.post('/login', passport.authenticate('local'), (req, res) => res.send('logged in'));
+router.post('/auth/login', passport.authenticate('local'), (req, res) => res.json(req.user));
+router.get('/auth/logout', (req, res) => {
+  req.logOut();
+  res.send('logged out');
+});
 router.use('/api/admin', isAdmin, adminRoutes);
 router.use('/api/student', isAuthenticated, studentRoutes);
 router.use((req, res) => res.status(404).send('sorry, not found'));

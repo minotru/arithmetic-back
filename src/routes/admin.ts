@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { User, IUserModel } from '../models';
+import { User, IUserModel, Task } from '../models';
 import { IUser } from '../interfaces';
 
 const router = Router();
@@ -39,6 +39,22 @@ router.get('/users/:id', (req, res) => {
         return res.send(user);
       }
       res.sendStatus(404);
+    })
+    .catch(err => res.send(err));
+});
+
+router.get('/tasks', (req, res) => {
+  const userId = req.query['userId'];
+  if (!userId) {
+    return res.status(400).send('userId is not present');
+  }
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        return res.status(400).send(`No user with id ${userId}`);
+      }
+      return Task.find({ userId })
+        .then(tasks => res.json(tasks));
     })
     .catch(err => res.send(err));
 });
