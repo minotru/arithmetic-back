@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 
 import { UserRole, IUser } from '../interfaces';
+import { NextFunction } from 'express';
 
 type ComparePasswordFunction = (
   candidatePassword: string,
@@ -46,7 +47,7 @@ const comparePassword: ComparePasswordFunction = function (candidatePassword, cb
 };
 
 userSchema.methods.comparePassword = comparePassword;
-userSchema.pre('save', function (next) {
+userSchema.pre('save', function (next: NextFunction) {
   if (!this.isModified('password')) {
     return next();
   }

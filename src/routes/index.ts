@@ -19,4 +19,4 @@ function isAdmin(req: Request, res: Response, next: NextFunction) {
 
 router.post('/login', passport.authenticate('local'), (req, res) => res.send('logged in'));
 router.use('/api/admin', isAdmin, adminRoutes);
-router.use((req, res) => res.status(404).send('sory, not found'));
+router.use((req, res) => res.status(404).send('sorry, not found'));

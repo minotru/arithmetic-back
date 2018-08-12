@@ -4,8 +4,8 @@ import {
   IOperation,
   ITask,
   ITaskConfig,
-} from './interfaces';
-import { isAllowedOperation } from './levels';
+} from '../interfaces';
+import { isAllowedOperation } from './gameMap';
 
 function generateNumber(digitsCnt: number, maxDigit: number) {
   let res: number = 0;
@@ -18,6 +18,14 @@ function generateNumber(digitsCnt: number, maxDigit: number) {
   }
   return res;
 }
+
+type AllowedOperationChecker = (
+  topic: string,
+  level: string,
+  value: number,
+  operation: OperationType,
+  operand: number,
+) => boolean;
 
 function generateOperation(
   topicName: TopicName,

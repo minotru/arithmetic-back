@@ -1,19 +1,19 @@
 import {
-  GameMap,
+  IGameMap,
   TopicName,
   ILevel,
   OperationType,
   IOperation,
   RestrictionsType,
-} from './interfaces/task';
+} from '../interfaces/task';
 
-let gameMap: GameMap = null;
+let gameMap: IGameMap = null;
 
-export function setGameMap(newGameMap: GameMap) {
+export function setGameMap(newGameMap: IGameMap) {
   gameMap = newGameMap;
 }
 
-export function getGameMap(): GameMap {
+export function getGameMap(): IGameMap {
   return gameMap;
 }
 

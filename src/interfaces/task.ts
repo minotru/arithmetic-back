@@ -52,6 +52,6 @@ export interface ITopic {
   [levelName: string]: ILevel;
 }
 
-export interface GameMap {
+export interface IGameMap {
   [topic: string]: ITopic;
 }
