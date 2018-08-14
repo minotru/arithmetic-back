@@ -29,6 +29,7 @@ export enum OperationType {
 export enum TopicName {
   SIMPLE = 'simple',
   BROTHER = 'brother',
+  FRIEND = 'friend',
   FRIEND_AND_BROTHER = 'friend-plus-brother',
   MULTIPLICATION = 'multiplication',
   DIVISION = 'division',

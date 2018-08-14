@@ -25,6 +25,11 @@ function isAuthenticated(req: Request, res: Response, next: NextFunction) {
   res.sendStatus(401);
 }
 
+router.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
 router.post('/auth/login', passport.authenticate('local'), (req, res) => res.json(req.user));
 router.get('/auth/logout', (req, res) => {
   req.logOut();
@@ -32,4 +37,5 @@ router.get('/auth/logout', (req, res) => {
 });
 router.use('/api/admin', isAdmin, adminRoutes);
 router.use('/api/student', isAuthenticated, studentRoutes);
+
 router.use((req, res) => res.status(404).send('sorry, not found'));

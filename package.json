@@ -45,7 +45,6 @@
     "@types/passport": "^0.4.6",
     "@types/passport-local": "^1.0.33",
     "@types/bcrypt": "^2.0.0",
-    "@types/connect-mongo": "^0.0.38",
     "@types/body-parser": "^1.17.0",
     "@types/express-session": "^1.15.10",
     "@types/morgan": "^1.7.35",
