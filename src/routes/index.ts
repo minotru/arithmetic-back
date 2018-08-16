@@ -33,5 +33,4 @@ router.get('/auth/logout', (req, res) => {
 router.use('/api/admin', isAdmin, adminRoutes);
 router.use('/api/student', isAuthenticated, studentRoutes);
 
-
 // router.use((req, res) => res.status(404).send('sorry, not found'));
