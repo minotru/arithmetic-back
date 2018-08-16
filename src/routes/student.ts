@@ -17,8 +17,8 @@ router.post('/tasks', (req, res) => {
   task.save()
     .then((task) => {
       res.json({
+        task,
         operations,
-        id: task.id,
       });
     })
     .catch(err => res.send(err));
@@ -36,10 +36,7 @@ router.post('/tasks/:taskId', (req, res) => {
       return task
         .save()
         .then(
-          () => res.json({
-            correctAnswer: task.answer,
-            isCorrect: userAnswer === task.answer,
-          }),
+          task => res.json(task),
         );
     })
     .catch(err => res.send(err));
