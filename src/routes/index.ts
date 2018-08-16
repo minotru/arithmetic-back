@@ -25,10 +25,33 @@ function isAuthenticated(req: Request, res: Response, next: NextFunction) {
   res.sendStatus(401);
 }
 
-router.post('/auth/login', passport.authenticate('local'), (req, res) => res.json(req.user));
+router.post(
+  '/auth/login',
+  // passport.authenticate('local'),
+  (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        if (info.message === 'no_user') {
+          return res.status(401).json({ error: 'credentials' });
+        }
+        return res.status(401).json({ error: 'inactive' });
+      }
+      req.logIn(user, (err) => {
+        if (err) {
+          return next(err);
+        }
+        return res.json(user);
+      });
+    })(req, res, next);
+  },
+  (req, res) => res.json(req.user),
+);
 router.get('/auth/logout', (req, res) => {
   req.logOut();
-  res.send('logged out');
+  res.json('logged out');
 });
 router.use('/api/admin', isAdmin, adminRoutes);
 router.use('/api/student', isAuthenticated, studentRoutes);
