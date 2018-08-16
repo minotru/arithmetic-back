@@ -5,6 +5,7 @@ import expressSession from 'express-session';
 import connectMongo from 'connect-mongo';
 import passport from 'passport';
 import morgan from 'morgan';
+import cors from 'cors';
 
 import { router } from './routes';
 import { User, IUserModel } from './models/User';
@@ -26,6 +27,20 @@ const mongooseConnection = mongoose.connection;
 const logger = morgan('dev');
 
 const app = express();
+// app.options('*', cors({
+//   credentials: true,
+//   origin: 'http://localhost:4200',
+// }));
+// app.use((req, res, next) => {
+//   res.header('Access-Control-Allow-Origin', '*');
+//   res.header('Access-Control-Allow-Headers', '*');
+//   res.header('Access-Control-Allow-Credentials', 'true');
+//   next();
+// });
+app.use(cors({
+  credentials: true,
+  origin: 'http://localhost:4200',
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressSession({
@@ -33,17 +48,16 @@ app.use(expressSession({
   store: new MongoStore({
     mongooseConnection,
   }),
-  resave: true,
+  resave: false,
   saveUninitialized: false,
 }));
+// app.use(cors({
+//   credentials: true,
+// }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(logger);
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
+
 app.use(router);
 
 setGameMap(loadGameMap());
