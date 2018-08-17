@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { User, IUserModel, Task } from '../models';
-import { IUser } from '../interfaces';
+import { IUser, UserRole } from '../interfaces';
 
 const router = Router();
 
@@ -17,7 +17,7 @@ router.post('/users', (req, res) => {
 });
 
 router.get('/users', (req, res) => {
-  User.find({})
+  User.find({ role: UserRole.STUDENT })
     .then((users) => {
       res.send(users);
     })
