@@ -29,7 +29,7 @@ router.post(
   '/auth/login',
   // passport.authenticate('local'),
   (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
+    passport.authenticate('local', (err, user: IUser, info) => {
       if (err) {
         return next(err);
       }
@@ -43,6 +43,7 @@ router.post(
         if (err) {
           return next(err);
         }
+        delete user.password;
         return res.json(user);
       });
     })(req, res, next);

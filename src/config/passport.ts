@@ -30,7 +30,7 @@ passport.use(new LocalStrategy(
         if (isMatch) {
           return done(null, user);
         }
-        return done(null, false);
+        return done(null, false, { message: 'no_user' });
       });
     });
   }));

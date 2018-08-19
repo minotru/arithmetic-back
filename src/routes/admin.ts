@@ -8,12 +8,13 @@ router.post('/users', (req, res) => {
   const user: IUserModel = new User(req.body);
   user
     .save()
-    .then(() => {
-      res.status(200);
-    })
-    .catch(err => res.status(400).send({
-      error: 'User exists',
-    }));
+    .then(user => res.json(user))
+    .catch((err) => {
+      console.log(err);
+      res.status(400).send({
+        error: 'User exists',
+      });
+    });
 });
 
 router.get('/users', (req, res) => {
@@ -27,7 +28,8 @@ router.get('/users', (req, res) => {
 router.delete('/users/:id', (req, res) => {
   const userId = <string>req.params['id'];
   User.findByIdAndRemove(userId)
-    .then(() => res.send('Deleted'))
+    .then(() => Task.remove({ userId }))
+    .then(() => res.sendStatus(200))
     .catch(err => res.send(err));
 });
 

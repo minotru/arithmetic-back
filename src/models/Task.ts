@@ -27,6 +27,8 @@ const taskSchema = new Schema(
         delete ret._id;
         delete ret.updatedAt;
         delete ret.__v;
+        ret.date = doc.createdAt;
+        delete ret.createdAt;
       },
     },
   },

@@ -33,7 +33,6 @@ const userSchema = new mongoose.Schema(
     toJSON: {
       transform (doc, ret) {
         ret.id = doc._id;
-        delete ret.password;
         delete ret._id;
         delete ret.__v;
       },
@@ -42,28 +41,29 @@ const userSchema = new mongoose.Schema(
 );
 
 const comparePassword: ComparePasswordFunction = function (candidatePassword, cb) {
-  bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
-    cb(err, isMatch);
-  });
+  // bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
+    // cb(err, isMatch);
+  // });
+  return cb(null, candidatePassword === this.password);
 };
 
 userSchema.methods.comparePassword = comparePassword;
-userSchema.pre('save', function (next: NextFunction) {
-  if (!this.isModified('password')) {
-    return next();
-  }
-  bcrypt.genSalt(10, (err, salt) => {
-    if (err) {
-      return next(err);
-    }
-    bcrypt.hash((<IUserModel>this).password, salt, (err: mongoose.Error, hash) => {
-      if (err) {
-        return next(err);
-      }
-      (<IUserModel>this).password = hash;
-      next();
-    });
-  });
-});
+// userSchema.pre('save', function (next: NextFunction) {
+//   if (!this.isModified('password')) {
+//     return next();
+//   }
+//   bcrypt.genSalt(10, (err, salt) => {
+//     if (err) {
+//       return next(err);
+//     }
+//     bcrypt.hash((<IUserModel>this).password, salt, (err: mongoose.Error, hash) => {
+//       if (err) {
+//         return next(err);
+//       }
+//       (<IUserModel>this).password = hash;
+//       next();
+//     });
+//   });
+// });
 
 export const User: mongoose.Model<IUserModel> = mongoose.model<IUserModel>('User', userSchema);
