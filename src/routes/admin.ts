@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { User, IUserModel, Task } from '../models';
 import { IUser, UserRole } from '../interfaces';
+import { getGameMap } from '../utils/gameMap';
+import { GameMap } from '../models/GameMap';
 
 const router = Router();
 
@@ -73,6 +75,21 @@ router.get('/tasks', (req, res) => {
         .then(tasks => res.json(tasks));
     })
     .catch(err => res.send(err));
+});
+
+router.get('/map', (req, res) => {
+  res.json(getGameMap());
+});
+
+router.put('/map', async (req, res) => {
+  const maps = await GameMap.find({});
+  const mapId = maps[0];
+  GameMap.findByIdAndUpdate(
+    mapId,
+    {
+      mapJson: JSON.stringify(req.body),
+    },
+  ).then(updatedMap => res.header('Content-Type', 'application/json').send(updatedMap.mapJson));
 });
 
 export default router;

@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema(
   },
   {
     toJSON: {
-      transform (doc, ret) {
+      transform(doc, ret) {
         ret.id = doc._id;
         delete ret._id;
         delete ret.__v;
@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema(
 
 const comparePassword: ComparePasswordFunction = function (candidatePassword, cb) {
   // bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
-    // cb(err, isMatch);
+  // cb(err, isMatch);
   // });
   return cb(null, candidatePassword === this.password);
 };

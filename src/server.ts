@@ -13,6 +13,7 @@ import { User, IUserModel } from './models/User';
 import './config/passport';
 import { IGameMap } from './interfaces';
 import { readFileSync } from 'fs';
+import { GameMap } from './models/GameMap';
 import { setGameMap } from './utils/gameMap';
 
 function loadGameMap(): IGameMap {
@@ -20,23 +21,23 @@ function loadGameMap(): IGameMap {
   return <IGameMap>JSON.parse(content);
 }
 
+async function loadGameMapFromDB() {
+  const maps = await GameMap.find({});
+  const json = maps[0].mapJson;
+  const start = Date.now();
+  const map: IGameMap = JSON.parse(json);
+  setGameMap(map);
+}
+
 mongoose.Promise = Promise;
 const MongoStore = connectMongo(expressSession);
-mongoose.connect(process.env.MONGODB_URI, { useMongoClient: true });
+mongoose
+  .connect(process.env.MONGODB_URI, { useMongoClient: true })
+  .then(() => loadGameMapFromDB());
 const mongooseConnection = mongoose.connection;
 const logger = morgan('dev');
 
 const app = express();
-// app.options('*', cors({
-//   credentials: true,
-//   origin: 'http://localhost:4200',
-// }));
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Origin', '*');
-//   res.header('Access-Control-Allow-Headers', '*');
-//   res.header('Access-Control-Allow-Credentials', 'true');
-//   next();
-// });
 app.use(cors({
   credentials: true,
   origin: 'http://localhost:4200',
@@ -51,16 +52,11 @@ app.use(expressSession({
   resave: false,
   saveUninitialized: false,
 }));
-// app.use(cors({
-//   credentials: true,
-// }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(logger);
 
 app.use(router);
-
-setGameMap(loadGameMap());
 
 app.listen(process.env.SERVER_PORT, () => {
   console.log(`server is listening on ${process.env.SERVER_PORT}`);

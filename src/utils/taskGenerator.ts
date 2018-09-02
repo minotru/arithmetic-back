@@ -77,7 +77,9 @@ function doOperation(
   }
 }
 
-export function generateTaskOperations(taskConfig: ITaskConfig): {
+export function generateTaskOperations(
+  taskConfig: ITaskConfig,
+): {
   operations: IOperation[],
   answer: number,
 } {
