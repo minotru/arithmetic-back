@@ -4,7 +4,7 @@ export interface ITaskConfig {
   level: number;
   operationsCnt: number;
   speed: number;
-  withRmainder: boolean;
+  withRemainder: boolean;
 }
 
 export interface IOperation {
