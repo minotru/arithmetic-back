@@ -1,3 +1,7 @@
+// import { IGameMap, ITopic, RulesType, TopicName } from "./interfaces";
+// import { fstat, readFileSync, writeFileSync } from "fs";
+// import { GAME_MAP_STRUCTURE } from "./gameMapStructure";
+
 import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
@@ -13,7 +17,8 @@ import { User, IUserModel } from './models/User';
 import './config/passport';
 import { IGameMap } from './interfaces';
 import { readFileSync } from 'fs';
-import { GameMap } from './models/GameMap';
+// import { GameMap } from './models/GameMap';
+import { Topic } from './models/Topic';
 import { setGameMap } from './utils/gameMap';
 
 function loadGameMap(): IGameMap {
@@ -22,11 +27,13 @@ function loadGameMap(): IGameMap {
 }
 
 async function loadGameMapFromDB() {
-  const maps = await GameMap.find({});
-  const json = maps[0].mapJson;
-  const start = Date.now();
-  const map: IGameMap = JSON.parse(json);
+  const map: IGameMap = <IGameMap>await Topic.find({});
   setGameMap(map);
+}
+
+function fillTopics() {
+  const map = loadGameMap();
+  Topic.create(map).then(x => console.log(x));
 }
 
 mongoose.Promise = Promise;
@@ -61,3 +68,28 @@ app.use(router);
 app.listen(process.env.SERVER_PORT, () => {
   console.log(`server is listening on ${process.env.SERVER_PORT}`);
 });
+
+// const map: IGameMap = [];
+// const structure = GAME_MAP_STRUCTURE;
+// structure.forEach((topic) => {
+//   const mapTopic: ITopic = {
+//     topicName: topic.topicName,
+//     levels: [],
+//   };
+//   topic.levels.forEach((levelName) => {
+//     mapTopic.levels.push({
+//       levelName,
+//       minus: {
+//         rulesType: RulesType.ALLOWED,
+//         rules: [],
+//       },
+//       plus: {
+//         rulesType: RulesType.ALLOWED,
+//         rules: [],
+//       },
+//     });
+//   });
+//   map.push(mapTopic);
+// });
+
+// writeFileSync('gameMapUpdate.json', JSON.stringify(map));

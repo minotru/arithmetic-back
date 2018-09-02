@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { User, IUserModel, Task } from '../models';
-import { IUser, UserRole } from '../interfaces';
+import { IUser, UserRole, ILevel } from '../interfaces';
 import { getGameMap } from '../utils/gameMap';
-import { GameMap } from '../models/GameMap';
+import { Topic } from '../models/Topic';
 
 const router = Router();
 
@@ -77,19 +77,52 @@ router.get('/tasks', (req, res) => {
     .catch(err => res.send(err));
 });
 
-router.get('/map', (req, res) => {
-  res.json(getGameMap());
+// router.get('/map', (req, res) => {
+//   res.json(getGameMap());
+// });
+
+router.get('/map/:topicName/:levelName', async(req, res) => {
+  const topicName = req.params['topicName'];
+  const levelName = req.params['levelName'];
+  const topic = await Topic.findOne({ topicName });
+  if (topic) {
+    const level = topic.levels.find(l => l.levelName === levelName);
+    if (!level) {
+      res.sendStatus(404);
+    } else {
+      res.json(level);
+    }
+  } else {
+    res.sendStatus(404);
+  }
 });
 
-router.put('/map', async (req, res) => {
-  const maps = await GameMap.find({});
-  const mapId = maps[0];
-  GameMap.findByIdAndUpdate(
-    mapId,
-    {
-      mapJson: JSON.stringify(req.body),
-    },
-  ).then(updatedMap => res.header('Content-Type', 'application/json').send(updatedMap.mapJson));
+router.put('/map/:topicName/:levelName', async(req, res) => {
+  const level: ILevel = <ILevel>req.body;
+  const topicName = req.params['topicName'];
+  const levelName = req.params['levelName'];
+  const topic = await Topic.findOne({ topicName });
+  if (!topic) {
+    return res.sendStatus(404);
+  }
+  const levelInd = topic.levels.findIndex(level => level.levelName === levelName);
+  if (levelInd === -1) {
+    return res.sendStatus(404);
+  }
+  topic.levels[levelInd] = level;
+  await Topic.findOneAndUpdate({ topicName }, topic);
+  res.json(level);
 });
+
+// router.put('/map', async (req, res) => {
+//   const maps = await GameMap.find({});
+//   const mapId = maps[0];
+//   GameMap.findByIdAndUpdate(
+//     mapId,
+//     {
+//       mapJson: JSON.stringify(req.body),
+//     },
+//   ).then(updatedMap => res.header('Content-Type', 'application/json').send(updatedMap.mapJson));
+// });
 
 export default router;

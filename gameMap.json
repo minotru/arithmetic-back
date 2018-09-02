@@ -1,116 +1,399 @@
 [
-    {
-        "topic": "simple",
-        "level": "2",
+  {
+    "topicName": "simple",
+    "levels": [
+      {
+        "levelName": "2",
         "minus": {
-            "rulesType": "forbidden",
-            "rules": [
-                {
-                    "value": 2,
-                    "ranges": [
-                        "3-9"
-                    ]
-                },
-                {
-                    "value": 20,
-                    "ranges": [
-                        "11-19"
-                    ]
-                },
-                {
-                    "value": 22,
-                    "ranges": [
-                        "13-19",
-                        "23-29"
-                    ]
-                },
-                {
-                    "value": 222,
-                    "ranges": [
-                        "103-109",
-                        "113-119",
-                        "123-129",
-                        "203-209",
-                        "213-219",
-                        "223-229"
-                    ]
-                }
-            ]
+          "rulesType": "forbidden",
+          "rules": [
+            {
+              "value": 2,
+              "ranges": [
+                "3-9"
+              ]
+            },
+            {
+              "value": 20,
+              "ranges": [
+                "11-19"
+              ]
+            },
+            {
+              "value": 22,
+              "ranges": [
+                "13-19",
+                "23-29"
+              ]
+            },
+            {
+              "value": 222,
+              "ranges": [
+                "103-109",
+                "113-119",
+                "123-129",
+                "203-209",
+                "213-219",
+                "223-229"
+              ]
+            }
+          ]
         },
         "plus": {
-            "rulesType": "forbidden",
-            "rules": [
-                {
-                    "value": 2,
-                    "ranges": [
-                        "3",
-                        "4",
-                        "8",
-                        "9"
-                    ]
-                },
-                {
-                    "value": 20,
-                    "ranges": [
-                        "30",
-                        "31-39",
-                        "40-49",
-                        "80-89",
-                        "90-99"
-                    ]
-                },
-                {
-                    "value": 22,
-                    "ranges": [
-                        "23",
-                        "24",
-                        "28",
-                        "29",
-                        "30-39",
-                        "40-49",
-                        "53",
-                        "54",
-                        "58",
-                        "59-99"
-                    ]
-                },
-                {
-                    "value": 222,
-                    "ranges": [
-                        "103-109",
-                        "113-119",
-                        "123-129",
-                        "130-199",
-                        "203",
-                        "204",
-                        "208",
-                        "209",
-                        "213",
-                        "214",
-                        "218",
-                        "219",
-                        "223",
-                        "224",
-                        "228",
-                        "229",
-                        "230-239",
-                        "240-249",
-                        "253",
-                        "254",
-                        "258",
-                        "259",
-                        "263-264",
-                        "268",
-                        "269",
-                        "273",
-                        "274",
-                        "278",
-                        "279",
-                        "280-289",
-                        "290-999"
-                    ]
-                }
-            ]
+          "rulesType": "forbidden",
+          "rules": [
+            {
+              "value": 2,
+              "ranges": [
+                "3",
+                "4",
+                "8",
+                "9"
+              ]
+            },
+            {
+              "value": 20,
+              "ranges": [
+                "30",
+                "31-39",
+                "40-49",
+                "80-89",
+                "90-99"
+              ]
+            },
+            {
+              "value": 22,
+              "ranges": [
+                "23",
+                "24",
+                "28",
+                "29",
+                "30-39",
+                "40-49",
+                "53",
+                "54",
+                "58",
+                "59-99"
+              ]
+            },
+            {
+              "value": 222,
+              "ranges": [
+                "103-109",
+                "113-119",
+                "123-129",
+                "130-199",
+                "203",
+                "204",
+                "208",
+                "209",
+                "213",
+                "214",
+                "218",
+                "219",
+                "223",
+                "224",
+                "228",
+                "229",
+                "230-239",
+                "240-249",
+                "253",
+                "254",
+                "258",
+                "259",
+                "263-264",
+                "268",
+                "269",
+                "273",
+                "274",
+                "278",
+                "279",
+                "280-289",
+                "290-999"
+              ]
+            }
+          ]
         }
-    }
+      },
+      {
+        "levelName": "3",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "4",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "5",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "6",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "7",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "8",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "9",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      }
+    ]
+  },
+  {
+    "topicName": "brother",
+    "levels": [
+      {
+        "levelName": "4",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "3",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "2",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "1",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      }
+    ]
+  },
+  {
+    "topicName": "friend",
+    "levels": [
+      {
+        "levelName": "9",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "8",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "7",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "6",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "5",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "4",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "3",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "2",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "1",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      }
+    ]
+  },
+  {
+    "topicName": "friend-plus-brother",
+    "levels": [
+      {
+        "levelName": "6",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "7",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "8",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      },
+      {
+        "levelName": "9",
+        "minus": {
+          "rulesType": "allowed",
+          "rules": []
+        },
+        "plus": {
+          "rulesType": "allowed",
+          "rules": []
+        }
+      }
+    ]
+  }
 ]

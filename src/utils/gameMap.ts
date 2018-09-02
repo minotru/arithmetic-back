@@ -4,7 +4,8 @@ import {
   ILevel,
   OperationType,
   IOperation,
-  RestrictionsType,
+  RulesType,
+  IRulesByOperation,
 } from '../interfaces/task';
 
 let gameMap: IGameMap = null;
@@ -18,13 +19,15 @@ export function getGameMap(): IGameMap {
 }
 
 function getLevel(topicName: TopicName, levelName: string): ILevel {
-  if (!gameMap[topicName]) {
+  const topic = gameMap.find(t => t.topicName === topicName);
+  if (!topic) {
     throw Error(`There is no topic ${topicName} in game map`);
   }
-  if (!gameMap[topicName][levelName]) {
+  const level = topic.levels.find(l => l.levelName === levelName);
+  if (!level) {
     throw Error(`There is no level ${levelName} in ${topicName} in game map`);
   }
-  return gameMap[topicName][levelName];
+  return level;
 }
 
 function isInRange(value: number, range: string): boolean {
@@ -46,18 +49,26 @@ export function isAllowedOperation(
   operand: number,
 ): boolean {
   const level: ILevel = getLevel(topicName, levelName);
-  if (!level[operation]) {
-    return false;
+  let rulesByOperation: IRulesByOperation;
+  if (operation === OperationType.PLUS) {
+    rulesByOperation = level.plus;
+  } else if (operation === OperationType.MINUS) {
+    rulesByOperation = level.minus;
+  } else {
+    throw new Error('map rules support only plus and minus operations');
   }
-  if (!level[operation][currentValue]) {
+
+  const rulesForValue = rulesByOperation.rules.find(rule => rule.value === currentValue);
+  if (!rulesForValue) {
     return true;
   }
-  const restrictionsType = level[operation][currentValue].restrictionsType;
-  const restrictions = level[operation][currentValue].restrictions;
-  switch (restrictionsType) {
-    case RestrictionsType.ALLOWED:
-      return restrictions.some(range => isInRange(operand, range));
-    case RestrictionsType.FORBIDDEN:
-      return !restrictions.some(range => isInRange(operand, range));
+  const ranges = rulesForValue.ranges;
+  const rulesType = rulesByOperation.rulesType;
+
+  switch (rulesType) {
+    case RulesType.ALLOWED:
+      return ranges.some(range => isInRange(operand, range));
+    case RulesType.FORBIDDEN:
+      return !ranges.some(range => isInRange(operand, range));
   }
 }

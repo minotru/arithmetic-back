@@ -4,6 +4,7 @@ export interface ITaskConfig {
   level: number;
   operationsCnt: number;
   speed: number;
+  withRmainder: boolean;
 }
 
 export interface IOperation {
@@ -20,39 +21,45 @@ export interface ITask {
 }
 
 export enum OperationType {
-  PLUS = '+',
-  MINUS = '-',
-  MULTIPLY = '*',
-  DIVIDE = '/',
+  PLUS = 'plus',
+  MINUS = 'minus',
+  MULTIPLY = 'mul',
+  DIVIDE = 'div',
 }
 
 export enum TopicName {
   SIMPLE = 'simple',
   BROTHER = 'brother',
   FRIEND = 'friend',
-  FRIEND_AND_BROTHER = 'friend-plus-brother',
+  FRIEND_PLUS_BROTHER = 'friend-plus-brother',
   MULTIPLICATION = 'multiplication',
   DIVISION = 'division',
 }
 
-export enum RestrictionsType {
+export enum RulesType {
   ALLOWED = 'allowed',
   FORBIDDEN = 'forbidden',
 }
 
+export interface IRule {
+  value: number;
+  ranges: string[];
+}
+
+export interface IRulesByOperation {
+  rulesType: RulesType;
+  rules: IRule[];
+}
+
 export interface ILevel {
-  [operation: string]: {
-    [leftValue: string]: {
-      restrictionsType: RestrictionsType,
-      restrictions: string[],
-    },
-  };
+  levelName: string;
+  [OperationType.MINUS]: IRulesByOperation;
+  [OperationType.PLUS]: IRulesByOperation;
 }
 
 export interface ITopic {
-  [levelName: string]: ILevel;
+  topicName: TopicName;
+  levels: ILevel[];
 }
 
-export interface IGameMap {
-  [topic: string]: ITopic;
-}
+export type IGameMap = ITopic[];
