@@ -13,6 +13,7 @@ router.post('/tasks', (req, res) => {
     userId,
     answer,
     config: taskConfig,
+    isCorrect: false,
   });
   task.save()
     .then((task) => {
