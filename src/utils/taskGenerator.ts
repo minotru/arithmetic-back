@@ -7,6 +7,11 @@ import {
 } from '../interfaces';
 import { isAllowedOperation } from './gameMap';
 
+export interface ITaskGenerationResult {
+  operations: IOperation[];
+  answer: number;
+}
+
 function generateNumber(digitsCnt: number, maxDigit: number) {
   let res: number = 0;
   for (let i = 0; i < digitsCnt; i += 1) {
@@ -77,12 +82,27 @@ function doOperation(
   }
 }
 
-export function generateTaskOperations(
+export function generateTaskOperations(taskConfig: ITaskConfig): ITaskGenerationResult {
+  if (taskConfig.topic === TopicName.MULTIPLICATION) {
+    return generateMulTaskOperations(taskConfig);
+  }
+  if (taskConfig.topic === TopicName.DIVISION) {
+    return generateDivTaskOperations(taskConfig);
+  }
+  return generatePlusMinusTaskOperations(taskConfig);
+}
+
+function generateMulTaskOperations(taskConfig: ITaskConfig): ITaskGenerationResult {
+  return {} as ITaskGenerationResult;
+}
+
+function generateDivTaskOperations(taskConfig: ITaskConfig): ITaskGenerationResult {
+  return {} as ITaskGenerationResult;
+}
+
+function generatePlusMinusTaskOperations(
   taskConfig: ITaskConfig,
-): {
-  operations: IOperation[],
-  answer: number,
-} {
+): ITaskGenerationResult {
   const operations: IOperation[] = [];
   let currentValue: number = 0;
   operations.push({
