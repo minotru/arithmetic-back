@@ -1,7 +1,3 @@
-// import { IGameMap, ITopic, RulesType, TopicName } from "./interfaces";
-// import { fstat, readFileSync, writeFileSync } from "fs";
-// import { GAME_MAP_STRUCTURE } from "./gameMapStructure";
-
 import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
@@ -17,7 +13,6 @@ import { User, IUserModel } from './models/User';
 import './config/passport';
 import { IGameMap } from './interfaces';
 import { readFileSync } from 'fs';
-// import { GameMap } from './models/GameMap';
 import { Topic } from './models/Topic';
 import { setGameMap } from './utils/gameMap';
 
@@ -36,12 +31,12 @@ function fillTopics() {
   Topic.create(map).then(x => console.log(x));
 }
 
-mongoose.Promise = Promise;
-const MongoStore = connectMongo(expressSession);
-mongoose
-  .connect(process.env.MONGODB_URI, { useMongoClient: true })
-  .then(() => loadGameMapFromDB());
-const mongooseConnection = mongoose.connection;
+// mongoose.Promise = Promise;
+// const MongoStore = connectMongo(expressSession);
+// mongoose
+//   .connect(process.env.MONGODB_URI, { useMongoClient: true })
+//   .then(() => loadGameMapFromDB());
+// const mongooseConnection = mongoose.connection;
 const logger = morgan('dev');
 
 const app = express();
@@ -51,22 +46,23 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(expressSession({
-  secret: process.env.SESSION_SECRET,
-  store: new MongoStore({
-    mongooseConnection,
-  }),
-  resave: false,
-  saveUninitialized: false,
-}));
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(expressSession({
+//   secret: process.env.SESSION_SECRET,
+//   store: new MongoStore({
+//     mongooseConnection,
+//   }),
+//   resave: false,
+//   saveUninitialized: false,
+// }));
+// app.use(passport.initialize());
+// app.use(passport.session());
 app.use(logger);
 
+app.use(express.static('public'));
 app.use(router);
 
-app.listen(process.env.SERVER_PORT, () => {
-  console.log(`server is listening on ${process.env.SERVER_PORT}`);
+app.listen(process.env.PORT, () => {
+  console.log(`server is listening on ${process.env.PORT}`);
 });
 
 // const map: IGameMap = [];
