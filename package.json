@@ -2,7 +2,10 @@
   "name": "back",
   "version": "1.0.0",
   "description": "backend for mental arithmetic learning app",
-  "main": "index.js",
+  "main": "dist/server.js",
+  "engines": {
+    "node": "10.1.0"
+  },
   "scripts": {
     "start": "npm run serve",
     "build": "npm run build-ts && npm run tslint",
