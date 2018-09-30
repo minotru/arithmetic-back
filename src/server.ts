@@ -17,6 +17,8 @@ import { readFileSync } from 'fs';
 import { Topic } from './models/Topic';
 import { setGameMap } from './utils/gameMap';
 
+const isProd = process.env.NODE_ENV === 'production';
+
 function loadGameMap(): IGameMap {
   const content: string = readFileSync('gameMap.json').toString();
   return <IGameMap>JSON.parse(content);
@@ -32,36 +34,46 @@ function fillTopics() {
   Topic.create(map).then(x => console.log(x));
 }
 
-if (process.env.NODE_ENV !== 'production') {
+if (!isProd) {
   const config = dotenv.parse('./.env');
   dotenv.config(config);
 }
 
-// mongoose.Promise = Promise;
-// const MongoStore = connectMongo(expressSession);
-// mongoose
-//   .connect(process.env.MONGODB_URI, { useMongoClient: true })
-//   .then(() => loadGameMapFromDB());
-// const mongooseConnection = mongoose.connection;
+mongoose.Promise = Promise;
+const MongoStore = connectMongo(expressSession);
+mongoose
+  .connect(process.env.MONGODB_URI, { useMongoClient: true })
+  .then(() => {
+    console.log('MongoDB connected');
+    loadGameMapFromDB();
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error');
+    console.error(err);
+  });
+const mongooseConnection = mongoose.connection;
+
 const logger = morgan('dev');
 
 const app = express();
-app.use(cors({
-  credentials: true,
-  origin: 'http://localhost:4200',
-}));
+if (!isProd) {
+  app.use(cors({
+    credentials: true,
+    origin: 'http://localhost:4200',
+  }));
+}
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(expressSession({
-//   secret: process.env.SESSION_SECRET,
-//   store: new MongoStore({
-//     mongooseConnection,
-//   }),
-//   resave: false,
-//   saveUninitialized: false,
-// }));
-// app.use(passport.initialize());
-// app.use(passport.session());
+app.use(expressSession({
+  secret: process.env.SESSION_SECRET,
+  store: new MongoStore({
+    mongooseConnection,
+  }),
+  resave: false,
+  saveUninitialized: false,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(logger);
 
 app.use(express.static('public'));
@@ -70,28 +82,3 @@ app.use(router);
 app.listen(process.env.PORT, () => {
   console.log(`server is listening on ${process.env.PORT}`);
 });
-
-// const map: IGameMap = [];
-// const structure = GAME_MAP_STRUCTURE;
-// structure.forEach((topic) => {
-//   const mapTopic: ITopic = {
-//     topicName: topic.topicName,
-//     levels: [],
-//   };
-//   topic.levels.forEach((levelName) => {
-//     mapTopic.levels.push({
-//       levelName,
-//       minus: {
-//         rulesType: RulesType.ALLOWED,
-//         rules: [],
-//       },
-//       plus: {
-//         rulesType: RulesType.ALLOWED,
-//         rules: [],
-//       },
-//     });
-//   });
-//   map.push(mapTopic);
-// });
-
-// writeFileSync('gameMapUpdate.json', JSON.stringify(map));
