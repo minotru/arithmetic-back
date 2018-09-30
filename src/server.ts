@@ -6,6 +6,7 @@ import connectMongo from 'connect-mongo';
 import passport from 'passport';
 import morgan from 'morgan';
 import cors from 'cors';
+import dotenv from 'dotenv';
 
 import { router } from './routes';
 import { User, IUserModel } from './models/User';
@@ -29,6 +30,11 @@ async function loadGameMapFromDB() {
 function fillTopics() {
   const map = loadGameMap();
   Topic.create(map).then(x => console.log(x));
+}
+
+if (process.env.NODE_ENV !== 'production') {
+  const config = dotenv.parse('./.env');
+  dotenv.config(config);
 }
 
 // mongoose.Promise = Promise;
