@@ -7,7 +7,6 @@ import { default as adminRoutes } from './admin';
 import { default as studentRoutes } from './student';
 import { default as authRoutes } from './auth';
 
-
 export const router = Router();
 
 function isAdmin(req: Request, res: Response, next: NextFunction) {
