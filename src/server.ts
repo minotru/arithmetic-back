@@ -16,12 +16,18 @@ import { IGameMap } from './interfaces';
 import { readFileSync } from 'fs';
 import { Topic } from './models/Topic';
 import { setGameMap } from './utils/gameMap';
+import { generateGameMapSkeleton } from './gameMapStructure';
 
 const isProd = process.env.NODE_ENV === 'production';
 
 function loadGameMap(): IGameMap {
   const content: string = readFileSync('gameMap.json').toString();
   return <IGameMap>JSON.parse(content);
+}
+
+function fillGameMapSkeleton() {
+  const topics = generateGameMapSkeleton();
+  Topic.create(topics);
 }
 
 async function loadGameMapFromDB() {
@@ -31,7 +37,7 @@ async function loadGameMapFromDB() {
 
 function fillTopics() {
   const map = loadGameMap();
-  Topic.create(map).then(x => console.log(x));
+  Topic.create(map);
 }
 
 if (!isProd) {
@@ -44,6 +50,7 @@ const MongoStore = connectMongo(expressSession);
 mongoose
   .connect(process.env.MONGODB_URI, { useNewUrlParser: true })
   .then(() => {
+    // fillGameMapSkeleton();
     console.log('MongoDB connected');
     loadGameMapFromDB();
   })

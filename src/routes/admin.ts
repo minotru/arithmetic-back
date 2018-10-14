@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { User, IUserModel, Task } from '../models';
 import { IUser, UserRole, ILevel } from '../interfaces';
-import { getGameMap } from '../utils/gameMap';
+import { setGameMap } from '../utils/gameMap';
 import { Topic } from '../models/Topic';
 
 const router = Router();
@@ -77,10 +77,6 @@ router.get('/tasks', (req, res) => {
     .catch(err => res.send(err));
 });
 
-// router.get('/map', (req, res) => {
-//   res.json(getGameMap());
-// });
-
 router.get('/map/:topicName/:levelName', async(req, res) => {
   const topicName = req.params['topicName'];
   const levelName = req.params['levelName'];
@@ -111,18 +107,8 @@ router.put('/map/:topicName/:levelName', async(req, res) => {
   }
   topic.levels[levelInd] = level;
   await Topic.findOneAndUpdate({ topicName }, topic);
+  Topic.find({}, topics => setGameMap(topics));
   res.json(level);
 });
-
-// router.put('/map', async (req, res) => {
-//   const maps = await GameMap.find({});
-//   const mapId = maps[0];
-//   GameMap.findByIdAndUpdate(
-//     mapId,
-//     {
-//       mapJson: JSON.stringify(req.body),
-//     },
-//   ).then(updatedMap => res.header('Content-Type', 'application/json').send(updatedMap.mapJson));
-// });
 
 export default router;
