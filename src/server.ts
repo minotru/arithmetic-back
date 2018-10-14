@@ -42,7 +42,7 @@ if (!isProd) {
 mongoose.Promise = Promise;
 const MongoStore = connectMongo(expressSession);
 mongoose
-  .connect(process.env.MONGODB_URI, { useMongoClient: true })
+  .connect(process.env.MONGODB_URI, { useNewUrlParser: true })
   .then(() => {
     console.log('MongoDB connected');
     loadGameMapFromDB();
@@ -78,6 +78,7 @@ app.use(logger);
 
 app.use(express.static('public'));
 app.use(router);
+app.use((req, res) => res.redirect('/'));
 
 app.listen(process.env.PORT, () => {
   console.log(`server is listening on ${process.env.PORT}`);
