@@ -107,7 +107,7 @@ router.put('/map/:topicName/:levelName', async(req, res) => {
   }
   topic.levels[levelInd] = level;
   await Topic.findOneAndUpdate({ topicName }, topic);
-  Topic.find({}, topics => setGameMap(topics));
+  await Topic.find({}, topics => setGameMap(topics));
   res.json(level);
 });
 
