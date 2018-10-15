@@ -5,7 +5,7 @@ import {
   ITask,
   ITaskConfig,
 } from '../interfaces';
-import { isAllowedOperation } from './gameMap';
+import { isAllowedOperation, getLevel } from './gameMap';
 
 export interface ITaskGenerationResult {
   operations: IOperation[];
@@ -27,6 +27,7 @@ function generateNumber(digitsCnt: number, maxDigit: number) {
 function generateOperation(
   topicName: TopicName,
   level: number,
+  maxDigit: number,
   digitsCnt: number,
   currentValue: number,
 ): IOperation {
@@ -43,7 +44,7 @@ function generateOperation(
     } else {
       operationType = plusOrMinus[wildcard];
     }
-    operand = generateNumber(digitsCnt, level);
+    operand = generateNumber(digitsCnt, maxDigit);
 
     isMapAllowedOperation = isAllowedOperation(
       topicName,
@@ -104,7 +105,10 @@ function generatePlusMinusTaskOperations(
   taskConfig: ITaskConfig,
 ): ITaskGenerationResult {
   const operations: IOperation[] = [];
+  const level = getLevel(taskConfig.topic, taskConfig.level.toString());
+  const maxDigit = level.maxDigit;
   let currentValue: number = 0;
+
   operations.push({
     operationType: OperationType.PLUS,
     operand: generateNumber(taskConfig.digitsCnt, taskConfig.level),
@@ -114,6 +118,7 @@ function generatePlusMinusTaskOperations(
     const nextOperation = generateOperation(
       taskConfig.topic,
       taskConfig.level,
+      maxDigit,
       taskConfig.digitsCnt,
       currentValue,
     );

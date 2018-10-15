@@ -25,9 +25,9 @@ function loadGameMap(): IGameMap {
   return <IGameMap>JSON.parse(content);
 }
 
-function fillGameMapSkeleton() {
+async function fillGameMapSkeleton() {
   const topics = generateGameMapSkeleton();
-  Topic.create(topics);
+  return Topic.create(topics);
 }
 
 async function loadGameMapFromDB() {
@@ -49,8 +49,8 @@ mongoose.Promise = Promise;
 const MongoStore = connectMongo(expressSession);
 mongoose
   .connect(process.env.MONGODB_URI, { useNewUrlParser: true })
-  .then(() => {
-    // fillGameMapSkeleton();
+  .then(async() => {
+    // await fillGameMapSkeleton();
     console.log('MongoDB connected');
     loadGameMapFromDB();
   })

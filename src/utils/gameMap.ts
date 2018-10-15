@@ -18,7 +18,7 @@ export function getGameMap(): IGameMap {
   return gameMap;
 }
 
-function getLevel(topicName: TopicName, levelName: string): ILevel {
+export function getLevel(topicName: TopicName, levelName: string): ILevel {
   const topic = gameMap.find(t => t.topicName === topicName);
   if (!topic) {
     throw Error(`There is no topic ${topicName} in game map`);

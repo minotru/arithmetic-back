@@ -53,6 +53,8 @@ export interface IRulesByOperation {
 
 export interface ILevel {
   levelName: string;
+  order: number;
+  maxDigit: number;
   [OperationType.MINUS]: IRulesByOperation;
   [OperationType.PLUS]: IRulesByOperation;
 }
