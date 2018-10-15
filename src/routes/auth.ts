@@ -32,7 +32,7 @@ router.post(
 
 router.get('/logout', (req, res) => {
   req.logOut();
-  res.sendStatus(200);
+  res.status(200).json('Logged out');
 });
 
 export default router;
