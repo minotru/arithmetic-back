@@ -1,7 +1,7 @@
 export interface ITaskConfig {
   digitsCnt: number;
   topic: TopicName;
-  level: number;
+  level: string;
   operationsCnt: number;
   speed: number;
   withRemainder: boolean;
