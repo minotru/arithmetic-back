@@ -41,9 +41,14 @@ export enum RulesType {
   FORBIDDEN = 'forbidden',
 }
 
+export interface IRange {
+  from: number;
+  to: number;
+}
+
 export interface IRule {
-  value: number;
-  ranges: string[];
+  value: IRange;
+  ranges: IRange[];
 }
 
 export interface IRulesByOperation {

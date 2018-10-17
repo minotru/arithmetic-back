@@ -1,16 +1,23 @@
 import mongoose from 'mongoose';
-import { ITopic, ILevel, OperationType } from '../interfaces';
+import { ITopic, ILevel, OperationType, IRule } from '../interfaces';
 
-export type ILevelModel = mongoose.Document & ILevel;
+const rangeSchema = new mongoose.Schema({
+  from: Number,
+  to: Number,
+});
+
+const ruleSchema = new mongoose.Schema({
+  value: rangeSchema,
+  ranges: [rangeSchema],
+});
+
 const levelSchema = new mongoose.Schema({
   levelName: String,
-  rules: [String],
   order: Number,
   maxDigit: Number,
   [OperationType.MINUS]: mongoose.SchemaTypes.Mixed,
   [OperationType.PLUS]: mongoose.SchemaTypes.Mixed,
 });
-export const Level = mongoose.model<ILevelModel>('level', levelSchema);
 
 export type ITopicModel = mongoose.Document & ITopic;
 const topicSchema = new mongoose.Schema({
