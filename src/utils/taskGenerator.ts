@@ -7,12 +7,73 @@ import {
   ILevel,
   IRulesByOperation,
   RulesType,
+  IRule,
+  IRange,
 } from '../interfaces';
 import { getLevel, getGameMap } from './gameMap';
 
 export interface ITaskGenerationResult {
   operations: IOperation[];
   answer: number;
+}
+
+declare type RulesTable = boolean[][];
+
+function createTable(n: number) {
+  const table = [];
+  for (let i = 1; i <= n; i += 1) {
+    const row = [];
+    for (let j = 1; j <= n; j += 1) {
+      row.push(false);
+    }
+    table.push(row);
+  }
+  return table;
+}
+
+const TABLE_SIZE = 1001;
+const canAddTable = createTable(TABLE_SIZE);
+const canSubTable = createTable(TABLE_SIZE);
+
+// function isInRange(value: number, rage: IRange) {
+//   return rage.from <= value && value <= rage.to;
+// }
+
+function fillAllowedTable(
+  table,
+  operation: OperationType,
+  levels: ILevel[],
+  maxLevelOrder: number,
+) {
+  levels.forEach((level) => {
+    if (level.order > maxLevelOrder) {
+      return;
+    }
+    const rulesType: RulesType = level[operation].rulesType;
+    const rules: IRule[] = level[operation].rules;
+    rules.forEach((rule) => {
+      for (let i = rule.value.from; i <= rule.value.to; i += 1) {
+        rule.ranges.forEach((range) => {
+          for (let j = range.from; j <= range.to; j += 1) {
+            table[i][j] = rulesType === RulesType.ALLOWED;
+          }
+        });
+      }
+    });
+  });
+}
+
+function isCorrectNumber(n: number, digitsCnt: number, maxDigit: number): boolean {
+  const s = n.toString();
+  if (s.length !== digitsCnt) {
+    return false;
+  }
+  for (let i = maxDigit + 1; i <= 9; i += 1) {
+    if (s.includes(i.toString())) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function generateNumber(digitsCnt: number, maxDigit: number) {
@@ -27,76 +88,59 @@ function generateNumber(digitsCnt: number, maxDigit: number) {
   return res;
 }
 
-function generateOperation(
-  level: ILevel,
+function generateOperand(
+  rulesTable: RulesTable,
   digitsCnt: number,
+  maxDigit: number,
+  currentValue: number,
+): number {
+  const allowedList = rulesTable[currentValue].reduce(
+    (prev, isAllowed, ind) => {
+      if (isAllowed && isCorrectNumber(ind, digitsCnt, maxDigit)) {
+        prev.push(ind);
+        return prev;
+      }
+      return prev;
+    },
+    []);
+  if (!allowedList.length) {
+    return null;
+  }
+
+  const operandOrder = Math.round(Math.random() * allowedList.length);
+  return allowedList[operandOrder];
+}
+
+function generateOperation(
+  canAddTable: RulesTable,
+  canSubTable: RulesTable,
+  digitsCnt: number,
+  maxDigit: number,
   currentValue: number,
 ): IOperation {
-  let operationType: OperationType;
-  let operand: number;
   const plusOrMinus: OperationType[] = [OperationType.PLUS, OperationType.MINUS];
-  let isAllowedOperationFlag: boolean;
-  let isAllowedResult: boolean;
-  do {
-    const wildcard = Math.round(Math.random());
-    operationType = plusOrMinus[wildcard];
-    operand = generateNumber(digitsCnt, level.maxDigit);
+  const addOrSubTable: RulesTable[] = [canAddTable, canSubTable];
+  let operationIndex = Math.round(Math.random());
+  let operand: number;
 
-    isAllowedOperationFlag = isAllowedOperation(
-      level,
-      currentValue,
-      operationType,
+  operand = generateOperand(addOrSubTable[operationIndex], digitsCnt, maxDigit, currentValue);
+  if (operand) {
+    return {
       operand,
-    );
-    const result = doOperation(currentValue, operand, operationType);
-    isAllowedResult = result > 0 && result.toString().length === digitsCnt;
-  } while (!isAllowedOperationFlag || !isAllowedResult);
-
-  return {
-    operationType,
-    operand,
-  };
-}
-
-function isInRange(value: number, range: string): boolean {
-  const rangeParts: number[] = range.split('-').map(part => Number.parseInt(part));
-  if (rangeParts.length === 1 && rangeParts[0] === value) {
-    return true;
-  }
-  if (value >= rangeParts[0] && value <= rangeParts[1]) {
-    return true;
-  }
-  return false;
-}
-
-export function isAllowedOperation(
-  level: ILevel,
-  currentValue: number,
-  operation: OperationType,
-  operand: number,
-): boolean {
-  let rulesByOperation: IRulesByOperation;
-  if (operation === OperationType.PLUS) {
-    rulesByOperation = level.plus;
-  } else if (operation === OperationType.MINUS) {
-    rulesByOperation = level.minus;
-  } else {
-    throw new Error('map rules support only plus and minus operations');
+      operationType: plusOrMinus[operationIndex],
+    };
   }
 
-  const rulesForValue = rulesByOperation.rules.find(rule => rule.value === currentValue);
-  if (!rulesForValue) {
-    return rulesByOperation.rulesType === RulesType.FORBIDDEN;
+  operationIndex = 1 - operationIndex;
+  operand = generateOperand(addOrSubTable[operationIndex], digitsCnt, maxDigit, currentValue);
+  if (operand) {
+    return {
+      operand,
+      operationType: plusOrMinus[operationIndex],
+    };
   }
-  const ranges = rulesForValue.ranges;
-  const rulesType = rulesByOperation.rulesType;
 
-  switch (rulesType) {
-    case RulesType.ALLOWED:
-      return ranges.some(range => isInRange(operand, range));
-    case RulesType.FORBIDDEN:
-      return !ranges.some(range => isInRange(operand, range));
-  }
+  return null;
 }
 
 function doOperation(
@@ -146,36 +190,28 @@ function getAllLevelsAsSortedArray(): ILevel[] {
   return levels;
 }
 
-function getRandomLevel(
-  allLevels: ILevel[],
-  maxLevelOrder: number,
-  currentLevelProbability: number,
-): ILevel {
-  const maxLevelIndex = allLevels.findIndex(level => level.order === maxLevelOrder);
-  if (Math.random() < currentLevelProbability) {
-    return allLevels[maxLevelIndex];
-  }
-  return allLevels[Math.trunc(maxLevelIndex * Math.random())];
-}
-
 function generatePlusMinusTaskOperations(
   taskConfig: ITaskConfig,
 ): ITaskGenerationResult {
   const operations: IOperation[] = [];
-  const maxLevelOrder = getLevel(taskConfig.topic, taskConfig.level).order;
+  const currentLevel = getLevel(taskConfig.topic, taskConfig.level);
+  const maxLevelOrder = currentLevel.order;
+  const maxDigit = currentLevel.maxDigit;
   const allLevels = getAllLevelsAsSortedArray();
+
   let currentValue: number = 0;
   const CURRENT_LEVEL_PROBABILITY: number = +process.env.CURRENT_LEVEL_PROBABILITY || 0.4;
 
-  let cnt = 0;
-  for (let i = 0; i < taskConfig.operationsCnt; i += 1) {
-    const level = getRandomLevel(allLevels, maxLevelOrder, CURRENT_LEVEL_PROBABILITY);
-    cnt += +(level.order === maxLevelOrder);
-    const nextOperation = generateOperation(
-      level,
-      taskConfig.digitsCnt,
-      currentValue,
-    );
+  fillAllowedTable(canAddTable, OperationType.PLUS, allLevels, maxLevelOrder);
+  fillAllowedTable(canSubTable, OperationType.MINUS, allLevels, maxLevelOrder);
+
+  operations.push({
+    operand: generateNumber(taskConfig.digitsCnt, maxDigit),
+    operationType: OperationType.PLUS,
+  });
+  for (let i = 1; i < taskConfig.operationsCnt; i += 1) {
+    const nextOperation =
+        generateOperation(canAddTable, canSubTable, taskConfig.digitsCnt, maxDigit, currentValue);
     currentValue = doOperation(currentValue, nextOperation.operand, nextOperation.operationType);
     operations.push(nextOperation);
   }
