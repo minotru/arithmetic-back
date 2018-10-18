@@ -1,14 +1,14 @@
 import mongoose from 'mongoose';
 import { ITopic, ILevel, OperationType, IRule } from '../interfaces';
 
-const rangeSchema = new mongoose.Schema({
-  from: Number,
-  to: Number,
-});
+// const rangeSchema = new mongoose.Schema({
+//   from: Number,
+//   to: Number,
+// });
 
 const ruleSchema = new mongoose.Schema({
-  value: rangeSchema,
-  ranges: [rangeSchema],
+  values: [String],
+  ranges: [String],
 });
 
 const levelSchema = new mongoose.Schema({

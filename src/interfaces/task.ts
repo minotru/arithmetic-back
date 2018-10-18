@@ -47,7 +47,7 @@ export interface IRange {
 }
 
 export interface IRule {
-  value: IRange;
+  values: IRange[];
   ranges: IRange[];
 }
 

@@ -31,8 +31,7 @@ async function fillGameMapSkeleton() {
 }
 
 async function loadGameMapFromDB() {
-  const map: IGameMap = <IGameMap>await Topic.find({});
-  setGameMap(map);
+  Topic.find().lean().then(topics => setGameMap(topics));
 }
 
 function fillTopics() {
