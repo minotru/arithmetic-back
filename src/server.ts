@@ -39,20 +39,6 @@ function fillTopics() {
   Topic.deleteMany({}).then(() => Topic.create(map));
 }
 
-function processMap() {
-  const oldMap: any[] = JSON.parse(readFileSync('gameMap.json').toString());
-  const skeleton = generateGameMapSkeleton();
-  const mapRules = (oldRules: any[]) => {
-  };
-  oldMap.forEach((topic, index) => {
-  });
-
-  function parseRange(str) { return str.split('-').map(s => Number.parseInt(s)); }
-  function rangeToObj(str) { let a = parseRange(str); return { from: a[0], to: a[1] || a[0] }; }
-  function parseAllRanges(str) { return str.replace(' ', '').split(',').map(s => rangeToObj(s)); }
-  function doAll(text) { return JSON.stringify(parseAllRanges(text)); }
-}
-
 if (!isProd) {
   const config = dotenv.parse('./.env');
   dotenv.config(config);
