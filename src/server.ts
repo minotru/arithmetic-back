@@ -36,7 +36,7 @@ async function loadGameMapFromDB() {
 
 function fillTopics() {
   const map = loadGameMap();
-  Topic.create(map);
+  Topic.deleteMany({}).then(() => Topic.create(map));
 }
 
 function processMap() {
@@ -67,7 +67,6 @@ mongoose
     console.log('MongoDB connected');
     loadGameMapFromDB();
     // fillTopics();
-    // console.log(JSON.stringify(generateGameMapSkeleton()));
   })
   .catch((err) => {
     console.error('MongoDB connection error');

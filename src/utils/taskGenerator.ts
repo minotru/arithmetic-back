@@ -107,30 +107,6 @@ function computeAllAllowed(
   return resultObject;
 }
 
-// function createAllowedTable(
-//   operation: OperationType,
-//   levels: ILevel[],
-//   maxLevelOrder: number,
-// ) {
-//   const table = {};
-//   levels.forEach((level) => {
-//     if (level.order > maxLevelOrder) {
-//       return;
-//     }
-//     const rulesType: RulesType = level[operation].rulesType;
-//     const rules: IRule[] = level[operation].rules;
-//     rules.forEach((rule) => {
-//       rule.values.forEach(value => forEachInRange(value, (i) => {
-//         rule.ranges.forEach(range => forEachInRange(range, (j) => {
-//           table[i] = table[i] || {};
-//           table[i][j] = rulesType === RulesType.ALLOWED;
-//         }));
-//       }));
-//     });
-//   });
-//   return table;
-// }
-
 function isCorrectNumber(n: number, digitsCnt: number, maxDigit: number): boolean {
   if (n <= 0) {
     return false;

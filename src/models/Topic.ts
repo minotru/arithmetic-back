@@ -1,10 +1,6 @@
 import mongoose from 'mongoose';
 import { ITopic, ILevel, OperationType, IRule } from '../interfaces';
 
-// const rangeSchema = new mongoose.Schema({
-//   from: Number,
-//   to: Number,
-// });
 
 const ruleSchema = new mongoose.Schema({
   values: [String],
