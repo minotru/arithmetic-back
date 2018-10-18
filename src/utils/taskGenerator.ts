@@ -24,7 +24,7 @@ function createTable(n: number) {
   for (let i = 1; i <= n; i += 1) {
     const row = [];
     for (let j = 1; j <= n; j += 1) {
-      row.push(false);
+      row.push(true);
     }
     table.push(row);
   }

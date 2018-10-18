@@ -40,6 +40,20 @@ function fillTopics() {
   Topic.create(map);
 }
 
+function processMap() {
+  const oldMap: any[] = JSON.parse(readFileSync('gameMap.json').toString());
+  const skeleton = generateGameMapSkeleton();
+  const mapRules = (oldRules: any[]) => {
+  };
+  oldMap.forEach((topic, index) => {
+  });
+
+  function parseRange(str) { return str.split('-').map(s => Number.parseInt(s)); }
+  function rangeToObj(str) { let a = parseRange(str); return { from: a[0], to: a[1] || a[0] }; }
+  function parseAllRanges(str) { return str.replace(' ', '').split(',').map(s => rangeToObj(s)); }
+  function doAll(text) { return JSON.stringify(parseAllRanges(text)); }
+}
+
 if (!isProd) {
   const config = dotenv.parse('./.env');
   dotenv.config(config);
@@ -49,10 +63,12 @@ mongoose.Promise = Promise;
 const MongoStore = connectMongo(expressSession);
 mongoose
   .connect(process.env.MONGODB_URI, { useNewUrlParser: true })
-  .then(async() => {
+  .then(async () => {
     // await fillGameMapSkeleton();
     console.log('MongoDB connected');
     loadGameMapFromDB();
+    // fillTopics();
+    // console.log(JSON.stringify(generateGameMapSkeleton()));
   })
   .catch((err) => {
     console.error('MongoDB connection error');

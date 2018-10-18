@@ -8,33 +8,43 @@
           "rulesType": "forbidden",
           "rules": [
             {
-              "value": 2,
+              "value": {
+                "from": 2,
+                "to": 2
+              },
               "ranges": [
-                "3-9"
+                {
+                  "from": 3,
+                  "to": 9
+                }
               ]
             },
             {
-              "value": 20,
+              "value": {
+                "from": 20,
+                "to": 20
+              },
               "ranges": [
-                "11-19"
+                {
+                  "from": 11,
+                  "to": 19
+                }
               ]
             },
             {
-              "value": 22,
+              "value": {
+                "from": 22,
+                "to": 22
+              },
               "ranges": [
-                "13-19",
-                "23-29"
-              ]
-            },
-            {
-              "value": 222,
-              "ranges": [
-                "103-109",
-                "113-119",
-                "123-129",
-                "203-209",
-                "213-219",
-                "223-229"
+                {
+                  "from": 13,
+                  "to": 19
+                },
+                {
+                  "from": 23,
+                  "to": 29
+                }
               ]
             }
           ]
@@ -43,154 +53,276 @@
           "rulesType": "forbidden",
           "rules": [
             {
-              "value": 2,
+              "value": {
+                "from": 2,
+                "to": 2
+              },
               "ranges": [
-                "3",
-                "4",
-                "8",
-                "9"
+                {
+                  "from": 3,
+                  "to": 4
+                },
+                {
+                  "from": 8,
+                  "to": 9
+                }
               ]
             },
             {
-              "value": 20,
+              "value": {
+                "from": 20,
+                "to": 20
+              },
               "ranges": [
-                "30",
-                "31-39",
-                "40-49",
-                "80-89",
-                "90-99"
+                {
+                  "from": 30,
+                  "to": 30
+                },
+                {
+                  "from": 31,
+                  "to": 39
+                },
+                {
+                  "from": 40,
+                  "to": 49
+                },
+                {
+                  "from": 53,
+                  "to": 54
+                },
+                {
+                  "from": 58,
+                  "to": 99
+                }
               ]
             },
             {
-              "value": 22,
+              "value": {
+                "from": 222,
+                "to": 222
+              },
               "ranges": [
-                "23",
-                "24",
-                "28",
-                "29",
-                "30-39",
-                "40-49",
-                "53",
-                "54",
-                "58",
-                "59-99"
-              ]
-            },
-            {
-              "value": 222,
-              "ranges": [
-                "103-109",
-                "113-119",
-                "123-129",
-                "130-199",
-                "203",
-                "204",
-                "208",
-                "209",
-                "213",
-                "214",
-                "218",
-                "219",
-                "223",
-                "224",
-                "228",
-                "229",
-                "230-239",
-                "240-249",
-                "253",
-                "254",
-                "258",
-                "259",
-                "263-264",
-                "268",
-                "269",
-                "273",
-                "274",
-                "278",
-                "279",
-                "280-289",
-                "290-999"
+                {
+                  "from": 103,
+                  "to": 109
+                },
+                {
+                  "from": 113,
+                  "to": 119
+                },
+                {
+                  "from": 123,
+                  "to": 129
+                },
+                {
+                  "from": 130,
+                  "to": 199
+                },
+                {
+                  "from": 203,
+                  "to": 203
+                },
+                {
+                  "from": 204,
+                  "to": 204
+                },
+                {
+                  "from": 208,
+                  "to": 208
+                },
+                {
+                  "from": 209,
+                  "to": 209
+                },
+                {
+                  "from": 213,
+                  "to": 213
+                },
+                {
+                  "from": 214,
+                  "to": 214
+                },
+                {
+                  "from": 218,
+                  "to": 218
+                },
+                {
+                  "from": 219,
+                  "to": 219
+                },
+                {
+                  "from": 223,
+                  "to": 223
+                },
+                {
+                  "from": 224,
+                  "to": 224
+                },
+                {
+                  "from": 228,
+                  "to": 228
+                },
+                {
+                  "from": 229,
+                  "to": 229
+                },
+                {
+                  "from": 230,
+                  "to": 239
+                },
+                {
+                  "from": 240,
+                  "to": 249
+                },
+                {
+                  "from": 253,
+                  "to": 253
+                },
+                {
+                  "from": 254,
+                  "to": 254
+                },
+                {
+                  "from": 258,
+                  "to": 258
+                },
+                {
+                  "from": 259,
+                  "to": 259
+                },
+                {
+                  "from": 263,
+                  "to": 264
+                },
+                {
+                  "from": 268,
+                  "to": 268
+                },
+                {
+                  "from": 269,
+                  "to": 269
+                },
+                {
+                  "from": 273,
+                  "to": 273
+                },
+                {
+                  "from": 274,
+                  "to": 274
+                },
+                {
+                  "from": 278,
+                  "to": 278
+                },
+                {
+                  "from": 279,
+                  "to": 279
+                },
+                {
+                  "from": 280,
+                  "to": 289
+                },
+                {
+                  "from": 290,
+                  "to": 999
+                }
               ]
             }
           ]
-        }
+        },
+        "order": 1,
+        "maxDigit": 2
       },
       {
         "levelName": "3",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 2,
+        "maxDigit": 3
       },
       {
         "levelName": "4",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 3,
+        "maxDigit": 4
       },
       {
         "levelName": "5",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 4,
+        "maxDigit": 5
       },
       {
         "levelName": "6",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 5,
+        "maxDigit": 6
       },
       {
         "levelName": "7",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 6,
+        "maxDigit": 7
       },
       {
         "levelName": "8",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 7,
+        "maxDigit": 8
       },
       {
         "levelName": "9",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 8,
+        "maxDigit": 8
       }
     ]
   },
@@ -199,47 +331,55 @@
     "levels": [
       {
         "levelName": "4",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 11,
+        "maxDigit": 9
       },
       {
         "levelName": "3",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 12,
+        "maxDigit": 9
       },
       {
         "levelName": "2",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 13,
+        "maxDigit": 9
       },
       {
         "levelName": "1",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 14,
+        "maxDigit": 9
       }
     ]
   },
@@ -248,102 +388,120 @@
     "levels": [
       {
         "levelName": "9",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 21,
+        "maxDigit": 9
       },
       {
         "levelName": "8",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 22,
+        "maxDigit": 9
       },
       {
         "levelName": "7",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 23,
+        "maxDigit": 9
       },
       {
         "levelName": "6",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 24,
+        "maxDigit": 9
       },
       {
         "levelName": "5",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 25,
+        "maxDigit": 9
       },
       {
         "levelName": "4",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 26,
+        "maxDigit": 9
       },
       {
         "levelName": "3",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 27,
+        "maxDigit": 9
       },
       {
         "levelName": "2",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 28,
+        "maxDigit": 9
       },
       {
         "levelName": "1",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 29,
+        "maxDigit": 9
       }
     ]
   },
@@ -352,47 +510,55 @@
     "levels": [
       {
         "levelName": "6",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 31,
+        "maxDigit": 9
       },
       {
         "levelName": "7",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 32,
+        "maxDigit": 9
       },
       {
         "levelName": "8",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 33,
+        "maxDigit": 9
       },
       {
         "levelName": "9",
-        "minus": {
-          "rulesType": "allowed",
+        "plus": {
+          "rulesType": "forbidden",
           "rules": []
         },
-        "plus": {
-          "rulesType": "allowed",
+        "minus": {
+          "rulesType": "forbidden",
           "rules": []
-        }
+        },
+        "order": 34,
+        "maxDigit": 9
       }
     ]
   }
