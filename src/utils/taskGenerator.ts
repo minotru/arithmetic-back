@@ -152,6 +152,7 @@ function generateOperandForLevel(
   maxDigit: number,
   digitsCnt: number,
 ) {
+  // @todo: process this case
   if (rulesByOperation.rulesType === RulesType.FORBIDDEN) {
     return null;
   }
