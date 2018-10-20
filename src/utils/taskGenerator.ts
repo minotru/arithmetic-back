@@ -2,14 +2,11 @@ import {
   TopicName,
   OperationType,
   IOperation,
-  ITask,
   ITaskConfig,
   ILevel,
   IRulesByOperation,
   RulesType,
-  IRule,
   IRange,
-  IGameMap,
 } from '../interfaces';
 import { getLevel, getGameMap } from './gameMap';
 
@@ -22,18 +19,6 @@ type CanDoTable = {
   [ind: number]: number[],
 };
 
-function createTable(n: number) {
-  const table = [];
-  for (let i = 1; i <= n; i += 1) {
-    const row = [];
-    for (let j = 1; j <= n; j += 1) {
-      row.push(true);
-    }
-    table.push(row);
-  }
-  return table;
-}
-
 function forEachInRange(range: IRange, cb: Function) {
   for (let i = range.from; i <= range.to; i += 1) {
     cb(i);
@@ -44,14 +29,31 @@ function forEachInRages(ranges: IRange[], cb: Function) {
   ranges.forEach(range => forEachInRange(range, cb));
 }
 
-function computeAllPossible(value, digitsCnt, maxDigit, operation) {
+function isInRange(value: number, range: IRange): boolean {
+  return range.from <= value && value <= range.to;
+}
+
+function generateMaxCombination(digit: number, cnt: number) {
+  let tmp = 0;
+  for (let i = 0; i < cnt; i += 1) {
+    tmp = tmp * 10 + digit;
+  }
+  return tmp;
+}
+
+function computeAllPossible(
+  value: number,
+  digitsCnt: number,
+  maxDigit: number,
+  operation: OperationType,
+) {
   const allPossible = new Set();
   const minNumber = Math.pow(10, digitsCnt - 1);
-  const maxNumber = Math.pow(10, digitsCnt);
+  const maxNumber = generateMaxCombination(maxDigit, digitsCnt);
   for (let j = minNumber; j < maxNumber; j += 1) {
     const correctNumber = isCorrectNumber(j, digitsCnt, maxDigit);
     const result = doOperation(value, j, operation);
-    const correctResult = result >= minNumber && result < maxNumber;
+    const correctResult = result >= minNumber && result <= maxNumber;
     if (correctNumber && correctResult) {
       allPossible.add(j);
     }
@@ -89,9 +91,9 @@ function computeAllAllowed(
   });
 
   const minNumber = Math.pow(10, digitsCnt - 1);
-  const maxNumber = Math.pow(10, digitsCnt);
+  const maxNumber = generateMaxCombination(maxDigit, digitsCnt);
   const resultObject = {};
-  for (let i = minNumber; i < maxNumber; i += 1) {
+  for (let i = minNumber; i <= maxNumber; i += 1) {
     const allAllowed = computeAllPossible(i, digitsCnt, maxDigit, operation);
     forEachInRages(forbiddenRules[i] || [], (value) => {
       allAllowed.delete(value);
@@ -135,7 +137,7 @@ function generateNumber(digitsCnt: number, maxDigit: number) {
   return res;
 }
 
-function generateOperand(
+function generateOperandBasic(
   canDoTable: CanDoTable,
   currentValue: number,
 ): number {
@@ -143,37 +145,87 @@ function generateOperand(
   return (allowed && allowed.length) ? allowed[Math.floor(allowed.length * Math.random())] : null;
 }
 
+function generateOperandForLevel(
+  canDoTable: CanDoTable,
+  currentValue: number,
+  rulesByOperation: IRulesByOperation,
+  maxDigit: number,
+  digitsCnt: number,
+) {
+  if (rulesByOperation.rulesType === RulesType.FORBIDDEN) {
+    return null;
+  }
+
+  const allowedValues: number[] = [];
+  rulesByOperation.rules.forEach((rule) => {
+    if (rule.values.some(valueRange => isInRange(currentValue, valueRange))) {
+      forEachInRages(rule.ranges, (ruleValue) => {
+        if (isCorrectNumber(ruleValue, digitsCnt, maxDigit)) {
+          allowedValues.push(ruleValue);
+        }
+      });
+    }
+  });
+  if (!allowedValues.length) {
+    return null;
+  }
+
+  return allowedValues[Math.trunc(allowedValues.length * Math.random())];
+}
+
+function generateOperand(
+  canDoTable: CanDoTable,
+  currentValue,
+  rulesByOperation: IRulesByOperation,
+  maxDigit: number,
+  digitsCnt: number,
+  currentLevelProbability: number,
+): number {
+  if (Math.random() < currentLevelProbability) {
+    const operand = generateOperandForLevel(
+      canDoTable,
+      currentValue,
+      rulesByOperation,
+      maxDigit,
+      digitsCnt,
+    );
+    if (operand) {
+      return operand;
+    }
+  }
+  return generateOperandBasic(canDoTable, currentValue);
+}
+
 function generateOperation(
   canAddTable: CanDoTable,
   canSubTable: CanDoTable,
-  digitsCnt: number,
-  maxDigit: number,
   currentValue: number,
+  level: ILevel,
+  maxDigit: number,
+  digitsCnt: number,
+  currentLevelProbability: number,
 ): IOperation {
   const plusOrMinus: OperationType[] = [OperationType.PLUS, OperationType.MINUS];
   const addOrSubTable: CanDoTable[] = [canAddTable, canSubTable];
   let operationIndex = Math.round(Math.random());
   let operand: number;
 
-  operand = generateOperand(
-    addOrSubTable[operationIndex],
-    currentValue);
-  if (operand) {
-    return {
-      operand,
-      operationType: plusOrMinus[operationIndex],
-    };
-  }
-
-  operationIndex = 1 - operationIndex;
-  operand = generateOperand(
-    addOrSubTable[operationIndex],
-    currentValue);
-  if (operand) {
-    return {
-      operand,
-      operationType: plusOrMinus[operationIndex],
-    };
+  for (let i = 0; i < 2; i += 1) {
+    operand = generateOperand(
+      addOrSubTable[operationIndex],
+      currentValue,
+      level[plusOrMinus[operationIndex]],
+      maxDigit,
+      digitsCnt,
+      currentLevelProbability,
+    );
+    if (operand) {
+      return {
+        operand,
+        operationType: plusOrMinus[operationIndex],
+      };
+    }
+    operationIndex = 1 - operationIndex;
   }
 
   return null;
@@ -256,7 +308,15 @@ function generatePlusMinusTaskOperations(
   currentValue = operations[0].operand;
   for (let i = 1; i < taskConfig.operationsCnt; i += 1) {
     const nextOperation =
-      generateOperation(canAddTable, canSubTable, taskConfig.digitsCnt, maxDigit, currentValue);
+      generateOperation(
+        canAddTable,
+        canSubTable,
+        currentValue,
+        currentLevel,
+        taskConfig.digitsCnt,
+        maxDigit,
+        CURRENT_LEVEL_PROBABILITY,
+      );
     currentValue = doOperation(currentValue, nextOperation.operand, nextOperation.operationType);
     operations.push(nextOperation);
   }

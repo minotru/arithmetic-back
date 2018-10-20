@@ -9,7 +9,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 
 import { router } from './routes';
-import { User, IUserModel } from './models/User';
 
 import './config/passport';
 import { IGameMap } from './interfaces';
