@@ -3,12 +3,8 @@ import {
   OperationType,
   IOperation,
   ITaskConfig,
-  ILevel,
-  IRulesByOperation,
-  RulesType,
-  IRange,
 } from '../interfaces';
-import { getLevel, getGameMap } from './gameMap';
+import { GAME_MAP_STRUCTURE } from '../gameMapStructure';
 
 export interface ITaskGenerationResult {
   operations: IOperation[];
@@ -16,220 +12,127 @@ export interface ITaskGenerationResult {
 }
 
 type CanDoTable = {
-  [ind: number]: number[],
-};
-
-function forEachInRange(range: IRange, cb: Function) {
-  for (let i = range.from; i <= range.to; i += 1) {
-    cb(i);
-  }
-}
-
-function forEachInRages(ranges: IRange[], cb: Function) {
-  ranges.forEach(range => forEachInRange(range, cb));
-}
-
-function isInRange(value: number, range: IRange): boolean {
-  return range.from <= value && value <= range.to;
-}
-
-function generateMaxCombination(digit: number, cnt: number) {
-  let tmp = 0;
-  for (let i = 0; i < cnt; i += 1) {
-    tmp = tmp * 10 + digit;
-  }
-  return tmp;
-}
-
-function computeAllPossible(
   value: number,
-  digitsCnt: number,
+  minLevelId: number,
+}[][];
+
+declare type AbacusState = number[];
+
+declare type FormulaTest = (
+  abacus1: AbacusState,
+  abacus2: AbacusState,
+  ind: number,
+  operation: OperationType,
+) => boolean;
+
+interface Formula {
+  test: FormulaTest;
+  minLevelId: number;
+}
+
+const MAX_CELL_CNT = 4;
+const MAX_NUMBER = 1000;
+
+let minLevelForOperation: number;
+const canAddTable: CanDoTable = [];
+const canSubTable: CanDoTable = [];
+
+function getStructureForTopic(topic: TopicName) {
+  return GAME_MAP_STRUCTURE.find(t => t.topicName === topic);
+}
+
+function simpleFormulaTestGenerator(
   maxDigit: number,
-  operation: OperationType,
-) {
-  const allPossible = new Set();
-  const minNumber = Math.pow(10, digitsCnt - 1);
-  const maxNumber = generateMaxCombination(maxDigit, digitsCnt);
-  for (let j = minNumber; j < maxNumber; j += 1) {
-    const correctNumber = isCorrectNumber(j, digitsCnt, maxDigit);
-    const result = doOperation(value, j, operation);
-    const correctResult = result >= minNumber && result <= maxNumber;
-    if (correctNumber && correctResult) {
-      allPossible.add(j);
+): FormulaTest {
+  return (
+    abacus1: AbacusState,
+    abacus2: AbacusState,
+    ind: number,
+    operation: OperationType,
+  ) => {
+    const d1 = abacus1[ind];
+    const d2 = abacus2[ind];
+    if (operation === OperationType.PLUS) {
+      return (
+        topPart(d1) + topPart(d2) <= topPart(maxDigit) &&
+        bottomPart(d1) + bottomPart(d2) <= bottomPart(maxDigit)
+      );
     }
-  }
-  return allPossible;
+    if (
+      topPart(d1) >= topPart(d2) &&
+      bottomPart(d1) >= bottomPart(d2)
+    ) {
+      return true;
+    }
+    return false;
+  };
 }
 
-function computeAllAllowed(
-  levels: ILevel[],
-  currentLevel: ILevel,
-  digitsCnt: number,
-  operation: OperationType,
-) {
-  const maxLevelOrder = currentLevel.order;
-  const maxDigit = currentLevel.maxDigit;
-  const allowedRules = {};
-  const forbiddenRules = {};
-
-  levels.forEach((level) => {
-    if (level.order > maxLevelOrder) {
-      return;
-    }
-
-    const rulesByOperation: IRulesByOperation = level[operation];
-    rulesByOperation.rules.forEach((rule) => {
-      forEachInRages(rule.values, (value) => {
-        if (rulesByOperation.rulesType === RulesType.ALLOWED) {
-          allowedRules[value] = allowedRules[value] || [];
-          allowedRules[value] = allowedRules[value].concat(rule.ranges);
-        } else {
-          forbiddenRules[value] = rule.ranges;
-        }
-      });
-    });
-  });
-
-  const minNumber = Math.pow(10, digitsCnt - 1);
-  const maxNumber = generateMaxCombination(maxDigit, digitsCnt);
-  const resultObject = {};
-  for (let i = minNumber; i <= maxNumber; i += 1) {
-    const allAllowed = computeAllPossible(i, digitsCnt, maxDigit, operation);
-    forEachInRages(forbiddenRules[i] || [], (value) => {
-      allAllowed.delete(value);
-    });
-    forEachInRages(allowedRules[i] || [], (value) => {
-      if (isCorrectNumber(value, digitsCnt, maxDigit)) {
-        allAllowed.add(value);
-      }
-    });
-    resultObject[i] = [...allAllowed.values()];
-  }
-
-  return resultObject;
-}
-
-function isCorrectNumber(n: number, digitsCnt: number, maxDigit: number): boolean {
-  if (n <= 0) {
-    return false;
-  }
-  const s = n.toString();
-  if (s.length !== digitsCnt) {
-    return false;
-  }
-  for (let i = maxDigit + 1; i <= 9; i += 1) {
-    if (s.includes(i.toString())) {
+function brotherFormulaTestGenerator(
+  digit: number,
+): FormulaTest {
+  return (
+    abacus1: AbacusState,
+    abacus2: AbacusState,
+    ind: number,
+    operation: OperationType,
+  ) => {
+    const d1 = abacus1[ind];
+    const d2 = abacus2[ind];
+    if (d2 !== digit) {
       return false;
     }
-  }
-  return true;
-}
-
-function generateNumber(digitsCnt: number, maxDigit: number) {
-  let res: number = 0;
-  for (let i = 0; i < digitsCnt; i += 1) {
-    let nextDigit = Math.round(Math.random() * maxDigit);
-    if (nextDigit === 0 && i === 0) {
-      nextDigit += 1;
+    const c = 5 - digit;
+    if (operation === OperationType.PLUS) {
+      return topPart(d1) === 0 && bottomPart(d1) - c >= 0;
     }
-    res = res * 10 + nextDigit;
-  }
-  return res;
+    return topPart(d1) === 1 && bottomPart(d1) + c <= 4;
+  };
 }
 
-function generateOperandBasic(
-  canDoTable: CanDoTable,
-  currentValue: number,
-): number {
-  const allowed = canDoTable[currentValue];
-  return (allowed && allowed.length) ? allowed[Math.floor(allowed.length * Math.random())] : null;
+function topPart(x: number): number {
+  return Math.trunc(x / 5);
 }
 
-function generateOperandForLevel(
-  canDoTable: CanDoTable,
-  currentValue: number,
-  rulesByOperation: IRulesByOperation,
-  maxDigit: number,
-  digitsCnt: number,
-) {
-  // @todo: process this case
-  if (rulesByOperation.rulesType === RulesType.FORBIDDEN) {
-    return null;
-  }
-
-  const allowedValues: number[] = [];
-  rulesByOperation.rules.forEach((rule) => {
-    if (rule.values.some(valueRange => isInRange(currentValue, valueRange))) {
-      forEachInRages(rule.ranges, (ruleValue) => {
-        if (isCorrectNumber(ruleValue, digitsCnt, maxDigit)) {
-          allowedValues.push(ruleValue);
-        }
-      });
-    }
-  });
-  if (!allowedValues.length) {
-    return null;
-  }
-
-  return allowedValues[Math.trunc(allowedValues.length * Math.random())];
+function bottomPart(x: number): number {
+  return x % 5;
 }
 
-function generateOperand(
-  canDoTable: CanDoTable,
-  currentValue,
-  rulesByOperation: IRulesByOperation,
-  maxDigit: number,
-  digitsCnt: number,
-  currentLevelProbability: number,
-): number {
-  if (Math.random() < currentLevelProbability) {
-    const operand = generateOperandForLevel(
-      canDoTable,
-      currentValue,
-      rulesByOperation,
-      maxDigit,
-      digitsCnt,
-    );
-    if (operand) {
-      return operand;
-    }
+function abacusFromNumber(num: number): AbacusState {
+  const abacusState: AbacusState = [];
+  let n = num;
+  while (n) {
+    abacusState.push(n % 10);
+    n = Math.trunc(n / 10);
   }
-  return generateOperandBasic(canDoTable, currentValue);
+  while (abacusState.length < MAX_CELL_CNT) {
+    abacusState.push(0);
+  }
+  return abacusState;
 }
 
-function generateOperation(
-  canAddTable: CanDoTable,
-  canSubTable: CanDoTable,
-  currentValue: number,
-  level: ILevel,
-  maxDigit: number,
-  digitsCnt: number,
-  currentLevelProbability: number,
-): IOperation {
-  const plusOrMinus: OperationType[] = [OperationType.PLUS, OperationType.MINUS];
-  const addOrSubTable: CanDoTable[] = [canAddTable, canSubTable];
-  let operationIndex = Math.round(Math.random());
-  let operand: number;
+function abacusToNumber(abacusState: AbacusState): number {
+  return abacusState.reduceRight((prev, cell) => 10 * prev + cell, 0);
+}
 
-  for (let i = 0; i < 2; i += 1) {
-    operand = generateOperand(
-      addOrSubTable[operationIndex],
-      currentValue,
-      level[plusOrMinus[operationIndex]],
-      maxDigit,
-      digitsCnt,
-      currentLevelProbability,
-    );
-    if (operand) {
-      return {
-        operand,
-        operationType: plusOrMinus[operationIndex],
-      };
-    }
-    operationIndex = 1 - operationIndex;
+function canDoOperation(
+  abacus1: AbacusState,
+  abacus2: AbacusState,
+  ind: number,
+  operation: OperationType,
+  formulas: Formula[],
+): boolean {
+  const d1 = abacus1[ind];
+  const d2 = abacus2[ind];
+  if (d1 === 0 && d2 === 0) {
+    return true;
   }
-
-  return null;
+  const formula = formulas.find(formula => formula.test(abacus1, abacus2, ind, operation));
+  if (formula) {
+    minLevelForOperation = Math.max(minLevelForOperation, formula.minLevelId);
+    return true;
+  }
+  return false;
 }
 
 function doOperation(
@@ -252,6 +155,62 @@ function doOperation(
   }
 }
 
+function findMinLevelToDoOperation(
+  number1: number,
+  number2: number,
+  operation: OperationType,
+  formulas: Formula[],
+): number {
+  let abacus1 = abacusFromNumber(number1);
+  const abacus2 = abacusFromNumber(number2);
+
+  minLevelForOperation = 0;
+  for (let ind = 0; ind < MAX_CELL_CNT; ind += 1) {
+    if (!canDoOperation(abacus1, abacus2, ind, operation, formulas)) {
+      return 0;
+    }
+    const n1 = abacusToNumber(abacus1);
+    const n2 = Math.pow(10, ind) * abacus2[ind];
+    abacus1 = abacusFromNumber(doOperation(n1, n2, operation));
+  }
+  return minLevelForOperation;
+}
+
+function generateTopicFormulas(
+  topic: TopicName,
+  testFunctionGenerator: (any) => FormulaTest,
+): Formula[] {
+  return GAME_MAP_STRUCTURE.find(t => t.topicName === topic).levels
+    .map(l => ({
+      test: testFunctionGenerator(+l.levelName),
+      minLevelId: l.order,
+    }));
+}
+
+function initCanDoTables() {
+  const simpleFormulas = generateTopicFormulas(TopicName.SIMPLE, simpleFormulaTestGenerator);
+  const brotherFormulas = generateTopicFormulas(TopicName.BROTHER, brotherFormulaTestGenerator);
+  const formulas = [].concat(simpleFormulas, brotherFormulas);
+  for (let i = 0; i < MAX_NUMBER; i += 1) {
+    canAddTable.push([]);
+    canSubTable.push([]);
+    for (let j = 1; j < MAX_NUMBER; j += 1) {
+      if (findMinLevelToDoOperation(i, j, OperationType.PLUS, formulas)) {
+        canAddTable[i].push({
+          value: j,
+          minLevelId: minLevelForOperation,
+        });
+      }
+      if (findMinLevelToDoOperation(i, j, OperationType.MINUS, formulas)) {
+        canSubTable[i].push({
+          value: j,
+          minLevelId: minLevelForOperation,
+        });
+      }
+    }
+  }
+}
+
 export function generateTaskOperations(taskConfig: ITaskConfig): ITaskGenerationResult {
   if (taskConfig.topic === TopicName.MULTIPLICATION) {
     return generateMulTaskOperations(taskConfig);
@@ -270,56 +229,59 @@ function generateDivTaskOperations(taskConfig: ITaskConfig): ITaskGenerationResu
   return {} as ITaskGenerationResult;
 }
 
-function getAllLevelsAsSortedArray(): ILevel[] {
-  const map = getGameMap();
-  const levels = map
-    .map(topic => topic.levels)
-    .reduce((prev, levels) => prev.concat(levels))
-    .sort((l1, l2) => l1.order - l2.order);
-  return levels;
+function generateOperation(
+  currentValue: number,
+  maxLevelId: number,
+  digitsCnt: number,
+): IOperation {
+  const plusOrMinus = [OperationType.PLUS, OperationType.MINUS];
+  const canDoTables = [canAddTable, canSubTable];
+  let operationIndex = Math.round(Math.random());
+  let tryCnt = 0;
+  while (tryCnt < 2) {
+    const operation = plusOrMinus[operationIndex];
+    const canDoTable = canDoTables[operationIndex];
+    const operationsForValue = canDoTable[currentValue]
+      .filter(o =>
+        o.minLevelId <= maxLevelId &&
+        doOperation(currentValue, o.value, operation) < Math.pow(10, digitsCnt),
+      );
+    if (operationsForValue.length) {
+      const operand = operationsForValue[Math.trunc(operationsForValue.length * Math.random())];
+      return {
+        operand: operand.value,
+        operationType: operation,
+      };
+    }
+
+    operationIndex = 1 - operationIndex;
+    tryCnt += 1;
+  }
+  return null;
 }
 
+
+// @todo: generate operations with probability
+// @todo: rebuild operations chain when there no more operations for current value
+// @todo: limit lower bound for operation
 function generatePlusMinusTaskOperations(
   taskConfig: ITaskConfig,
 ): ITaskGenerationResult {
   const operations: IOperation[] = [];
-  const currentLevel = getLevel(taskConfig.topic, taskConfig.level);
-  const maxLevelOrder = currentLevel.order;
-  const maxDigit = currentLevel.maxDigit;
-  const allLevels = getAllLevelsAsSortedArray();
-
-  let currentValue: number = 0;
-  const CURRENT_LEVEL_PROBABILITY: number = +process.env.CURRENT_LEVEL_PROBABILITY || 0.4;
-
-  const canAddTable = computeAllAllowed(
-    allLevels,
-    currentLevel,
-    taskConfig.digitsCnt,
-    OperationType.PLUS);
-  const canSubTable = computeAllAllowed(
-    allLevels,
-    currentLevel,
-    taskConfig.digitsCnt,
-    OperationType.MINUS);
-
-  operations.push({
-    operand: generateNumber(taskConfig.digitsCnt, maxDigit),
-    operationType: OperationType.PLUS,
-  });
-  currentValue = operations[0].operand;
-  for (let i = 1; i < taskConfig.operationsCnt; i += 1) {
-    const nextOperation =
-      generateOperation(
-        canAddTable,
-        canSubTable,
-        currentValue,
-        currentLevel,
-        taskConfig.digitsCnt,
-        maxDigit,
-        CURRENT_LEVEL_PROBABILITY,
-      );
-    currentValue = doOperation(currentValue, nextOperation.operand, nextOperation.operationType);
-    operations.push(nextOperation);
+  const maxLevelId = GAME_MAP_STRUCTURE
+    .find(t => taskConfig.topic === t.topicName).levels
+    .find(l => l.levelName === taskConfig.level)
+    .order;
+  let currentValue = 0;
+  for (let i = 0; i < taskConfig.operationsCnt; i += 1) {
+    const operation = generateOperation(currentValue, maxLevelId, taskConfig.digitsCnt);
+    if (!operation) {
+      throw new Error(`Can not generate task.
+          value: ${currentValue},
+          config: ${taskConfig}`);
+    }
+    currentValue = doOperation(currentValue, operation.operand, operation.operationType);
+    operations.push(operation);
   }
 
   return {
@@ -327,3 +289,5 @@ function generatePlusMinusTaskOperations(
     answer: currentValue,
   };
 }
+
+initCanDoTables();

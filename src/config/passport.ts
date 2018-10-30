@@ -18,10 +18,10 @@ passport.use(new LocalStrategy(
         return done(err);
       }
       if (!user) {
-        return done(null, false, { message: `no_user` });
+        return done(null, false, { message: 'no_user' });
       }
       if (!user.isActive) {
-        return done(null, false, { message: `inactive` });
+        return done(null, false, { message: 'inactive' });
       }
       user.comparePassword(password, (err, isMatch) => {
         if (err) {

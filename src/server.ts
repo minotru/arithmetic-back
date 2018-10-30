@@ -11,32 +11,8 @@ import dotenv from 'dotenv';
 import { router } from './routes';
 
 import './config/passport';
-import { IGameMap } from './interfaces';
-import { readFileSync } from 'fs';
-import { Topic } from './models/Topic';
-import { setGameMap } from './utils/gameMap';
-import { generateGameMapSkeleton } from './gameMapStructure';
 
 const isProd = process.env.NODE_ENV === 'production';
-
-function loadGameMap(): IGameMap {
-  const content: string = readFileSync('gameMap.json').toString();
-  return <IGameMap>JSON.parse(content);
-}
-
-async function fillGameMapSkeleton() {
-  const topics = generateGameMapSkeleton();
-  return Topic.create(topics);
-}
-
-async function loadGameMapFromDB() {
-  Topic.find().lean().then(topics => setGameMap(topics));
-}
-
-function fillTopics() {
-  const map = loadGameMap();
-  Topic.deleteMany({}).then(() => Topic.create(map));
-}
 
 if (!isProd) {
   const config = dotenv.parse('./.env');
@@ -48,10 +24,7 @@ const MongoStore = connectMongo(expressSession);
 mongoose
   .connect(process.env.MONGODB_URI, { useNewUrlParser: true })
   .then(async () => {
-    // await fillGameMapSkeleton();
     console.log('MongoDB connected');
-    loadGameMapFromDB();
-    // fillTopics();
   })
   .catch((err) => {
     console.error('MongoDB connection error');
