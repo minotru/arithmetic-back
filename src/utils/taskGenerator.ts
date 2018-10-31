@@ -52,19 +52,20 @@ function simpleFormulaTestGenerator(
   ) => {
     const d1 = abacus1[ind];
     const d2 = abacus2[ind];
+    if (d1 > maxDigit || d2 > maxDigit) {
+      return false;
+    }
     if (operation === OperationType.PLUS) {
       return (
+        d1 + d2 <= maxDigit &&
         topPart(d1) + topPart(d2) <= topPart(maxDigit) &&
-        bottomPart(d1) + bottomPart(d2) <= bottomPart(maxDigit)
+        bottomPart(d1) + bottomPart(d2) <= Math.min(4, maxDigit)
       );
     }
-    if (
+    return (
       topPart(d1) >= topPart(d2) &&
       bottomPart(d1) >= bottomPart(d2)
-    ) {
-      return true;
-    }
-    return false;
+    );
   };
 }
 
@@ -229,10 +230,15 @@ function generateDivTaskOperations(taskConfig: ITaskConfig): ITaskGenerationResu
   return {} as ITaskGenerationResult;
 }
 
+function getRandomElement<T>(arr: T[]): T {
+  return arr[Math.trunc(Math.random() * arr.length)];
+}
+
 function generateOperation(
   currentValue: number,
   maxLevelId: number,
   digitsCnt: number,
+  currentLevelProbability: number,
 ): IOperation {
   const plusOrMinus = [OperationType.PLUS, OperationType.MINUS];
   const canDoTables = [canAddTable, canSubTable];
@@ -247,7 +253,16 @@ function generateOperation(
         doOperation(currentValue, o.value, operation) < Math.pow(10, digitsCnt),
       );
     if (operationsForValue.length) {
-      const operand = operationsForValue[Math.trunc(operationsForValue.length * Math.random())];
+      if (Math.random() <= currentLevelProbability) {
+        const operationsForLevel = operationsForValue.filter(o => o.minLevelId === maxLevelId);
+        if (operationsForLevel.length) {
+          return {
+            operand: getRandomElement(operationsForLevel).value,
+            operationType: operation,
+          };
+        }
+      }
+      const operand = getRandomElement(operationsForValue);
       return {
         operand: operand.value,
         operationType: operation,
@@ -260,7 +275,6 @@ function generateOperation(
   return null;
 }
 
-
 // @todo: generate operations with probability
 // @todo: rebuild operations chain when there no more operations for current value
 // @todo: limit lower bound for operation
@@ -272,9 +286,15 @@ function generatePlusMinusTaskOperations(
     .find(t => taskConfig.topic === t.topicName).levels
     .find(l => l.levelName === taskConfig.level)
     .order;
+  const currentLevelProbability: number = +process.env.CURRENT_LEVEL_PROBABILITY;
   let currentValue = 0;
   for (let i = 0; i < taskConfig.operationsCnt; i += 1) {
-    const operation = generateOperation(currentValue, maxLevelId, taskConfig.digitsCnt);
+    const operation = generateOperation(
+      currentValue,
+      maxLevelId,
+      taskConfig.digitsCnt,
+      currentLevelProbability,
+    );
     if (!operation) {
       throw new Error(`Can not generate task.
           value: ${currentValue},
