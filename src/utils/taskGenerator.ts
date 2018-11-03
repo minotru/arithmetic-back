@@ -98,7 +98,15 @@ function brotherFormulaTestGenerator(
   };
 }
 
-function friendFormulaGenerator(
+function selectAllFormulasBeforeTopic(
+  topic: TopicName,
+  formulas: Formula[],
+): Formula[] {
+  const firstTopicFormulaId = getStructureForTopic(topic).levels[0].order;
+  return formulas.filter(formula => formula.minLevelId < firstTopicFormulaId);
+}
+
+function friendFormulaTestGenerator(
   digit: number,
 ): FormulaTest {
   return (
@@ -117,9 +125,7 @@ function friendFormulaGenerator(
     }
     const inversedOperation =
       operation === OperationType.PLUS ? OperationType.MINUS : OperationType.PLUS;
-    const maxSimpleId = getMaxLevelIdForTopic(TopicName.SIMPLE);
-    const lastSimpleIndex = formulas.findIndex(formula => formula.minLevelId === maxSimpleId);
-    const simpleFormulas = formulas.slice(0, lastSimpleIndex + 1);
+    const simpleFormulas = selectAllFormulasBeforeTopic(TopicName.BROTHER, formulas);
     const canDoNext = canDoOperation(
       abacus1,
       abacusFromNumber(Math.pow(10, ind + 1)),
@@ -133,6 +139,44 @@ function friendFormulaGenerator(
       ind,
       inversedOperation,
       simpleFormulas,
+    );
+    return canDoCurrent && canDoNext;
+  };
+}
+
+function friendPlusBrotherFormulaTestGenerator(
+  digit: number,
+): FormulaTest {
+  return (
+    abacus1: AbacusState,
+    abacus2: AbacusState,
+    ind: number,
+    operation: OperationType,
+    formulas: Formula[],
+  ) => {
+    const d2 = abacus2[ind];
+    if (d2 !== digit) {
+      return false;
+    }
+    if (ind + 1 === MAX_CELL_CNT) {
+      return false;
+    }
+    const inversedOperation =
+      operation === OperationType.PLUS ? OperationType.MINUS : OperationType.PLUS;
+    const brotherFormulas = selectAllFormulasBeforeTopic(TopicName.FRIEND, formulas);
+    const canDoNext = canDoOperation(
+      abacus1,
+      abacusFromNumber(Math.pow(10, ind + 1)),
+      ind + 1,
+      operation,
+      formulas,
+    );
+    const canDoCurrent = canDoOperation(
+      abacus1,
+      abacusFromNumber(Math.pow(10, ind) * (10 - digit)),
+      ind,
+      inversedOperation,
+      brotherFormulas,
     );
     return canDoCurrent && canDoNext;
   };
@@ -240,8 +284,12 @@ function generateTopicFormulas(
 function initCanDoTables() {
   const simpleFormulas = generateTopicFormulas(TopicName.SIMPLE, simpleFormulaTestGenerator);
   const brotherFormulas = generateTopicFormulas(TopicName.BROTHER, brotherFormulaTestGenerator);
-  const friendFormulas = generateTopicFormulas(TopicName.FRIEND, friendFormulaGenerator);
-  formulas = [].concat(simpleFormulas, brotherFormulas, friendFormulas);
+  const friendFormulas = generateTopicFormulas(TopicName.FRIEND, friendFormulaTestGenerator);
+  const friendPlusBrotherFormulas = generateTopicFormulas(
+    TopicName.FRIEND_PLUS_BROTHER,
+    friendPlusBrotherFormulaTestGenerator,
+  );
+  formulas = [].concat(simpleFormulas, brotherFormulas, friendFormulas, friendPlusBrotherFormulas);
   for (let i = 0; i < MAX_NUMBER; i += 1) {
     canAddTable.push([]);
     canSubTable.push([]);
