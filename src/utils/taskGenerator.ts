@@ -23,6 +23,7 @@ declare type FormulaTest = (
   abacus2: AbacusState,
   ind: number,
   operation: OperationType,
+  formulas?: Formula[],
 ) => boolean;
 
 interface Formula {
@@ -34,11 +35,17 @@ const MAX_CELL_CNT = 4;
 const MAX_NUMBER = 1000;
 
 let minLevelForOperation: number;
+let formulas: Formula[] = [];
 const canAddTable: CanDoTable = [];
 const canSubTable: CanDoTable = [];
 
 function getStructureForTopic(topic: TopicName) {
   return GAME_MAP_STRUCTURE.find(t => t.topicName === topic);
+}
+
+function getMaxLevelIdForTopic(topicName: TopicName) {
+  const topic = getStructureForTopic(topicName);
+  return topic.levels[topic.levels.length - 1].order;
 }
 
 function simpleFormulaTestGenerator(
@@ -91,6 +98,46 @@ function brotherFormulaTestGenerator(
   };
 }
 
+function friendFormulaGenerator(
+  digit: number,
+): FormulaTest {
+  return (
+    abacus1: AbacusState,
+    abacus2: AbacusState,
+    ind: number,
+    operation: OperationType,
+    formulas: Formula[],
+  ) => {
+    const d2 = abacus2[ind];
+    if (d2 !== digit) {
+      return false;
+    }
+    if (ind + 1 === MAX_CELL_CNT) {
+      return false;
+    }
+    const inversedOperation =
+      operation === OperationType.PLUS ? OperationType.MINUS : OperationType.PLUS;
+    const maxSimpleId = getMaxLevelIdForTopic(TopicName.SIMPLE);
+    const lastSimpleIndex = formulas.findIndex(formula => formula.minLevelId === maxSimpleId);
+    const simpleFormulas = formulas.slice(0, lastSimpleIndex + 1);
+    const canDoNext = canDoOperation(
+      abacus1,
+      abacusFromNumber(Math.pow(10, ind + 1)),
+      ind + 1,
+      operation,
+      formulas,
+    );
+    const canDoCurrent = canDoOperation(
+      abacus1,
+      abacusFromNumber(Math.pow(10, ind) * (10 - digit)),
+      ind,
+      inversedOperation,
+      simpleFormulas,
+    );
+    return canDoCurrent && canDoNext;
+  };
+}
+
 function topPart(x: number): number {
   return Math.trunc(x / 5);
 }
@@ -128,7 +175,9 @@ function canDoOperation(
   if (d1 === 0 && d2 === 0) {
     return true;
   }
-  const formula = formulas.find(formula => formula.test(abacus1, abacus2, ind, operation));
+  const formula = formulas.find(
+    formula => formula.test(abacus1, abacus2, ind, operation, formulas),
+  );
   if (formula) {
     minLevelForOperation = Math.max(minLevelForOperation, formula.minLevelId);
     return true;
@@ -191,7 +240,8 @@ function generateTopicFormulas(
 function initCanDoTables() {
   const simpleFormulas = generateTopicFormulas(TopicName.SIMPLE, simpleFormulaTestGenerator);
   const brotherFormulas = generateTopicFormulas(TopicName.BROTHER, brotherFormulaTestGenerator);
-  const formulas = [].concat(simpleFormulas, brotherFormulas);
+  const friendFormulas = generateTopicFormulas(TopicName.FRIEND, friendFormulaGenerator);
+  formulas = [].concat(simpleFormulas, brotherFormulas, friendFormulas);
   for (let i = 0; i < MAX_NUMBER; i += 1) {
     canAddTable.push([]);
     canSubTable.push([]);
@@ -275,8 +325,6 @@ function generateOperation(
   return null;
 }
 
-// @todo: generate operations with probability
-// @todo: rebuild operations chain when there no more operations for current value
 // @todo: limit lower bound for operation
 function generatePlusMinusTaskOperations(
   taskConfig: ITaskConfig,
