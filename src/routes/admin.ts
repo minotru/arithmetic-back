@@ -63,6 +63,7 @@ router.put('/users/:id', (req, res) => {
 
 router.get('/tasks', (req, res) => {
   const userId = req.query['userId'];
+  const tasksPerPage = 100;
   if (!userId) {
     return res.status(400).send('userId is not present');
   }
@@ -71,7 +72,7 @@ router.get('/tasks', (req, res) => {
       if (!user) {
         return res.status(400).send(`No user with id ${userId}`);
       }
-      return Task.find({ userId })
+      return Task.find({ userId }, null, { limit: tasksPerPage })
         .then(tasks => res.json(tasks));
     })
     .catch(err => res.send(err));
