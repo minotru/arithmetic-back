@@ -345,10 +345,13 @@ function generateOperation(
   while (tryCnt < 2) {
     const operation = plusOrMinus[operationIndex];
     const canDoTable = canDoTables[operationIndex];
+    const maxOperationResult = Math.min(Math.pow(10, digitsCnt + 1), MAX_NUMBER);
+    const maxOperandValue = Math.pow(10, digitsCnt);
     const operationsForValue = canDoTable[currentValue]
       .filter(o =>
         o.minLevelId <= maxLevelId &&
-        doOperation(currentValue, o.value, operation) < Math.pow(10, digitsCnt),
+        o.value < maxOperandValue &&
+        doOperation(currentValue, o.value, operation) < maxOperationResult,
       );
     if (operationsForValue.length) {
       if (Math.random() <= currentLevelProbability) {
