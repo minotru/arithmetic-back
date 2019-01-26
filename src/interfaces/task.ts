@@ -1,10 +1,10 @@
 export interface ITaskConfig {
-  digitsCnt: number;
   topic: TopicName;
-  level: string;
-  operationsCnt: number;
-  speed: number;
-  withRemainder: boolean;
+  level: number;
+  digitsCnt?: number;
+  operationsCnt?: number;
+  speed?: number;
+  withRemainder?: boolean;
 }
 
 export interface IOperation {

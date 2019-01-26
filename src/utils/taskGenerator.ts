@@ -43,11 +43,6 @@ function getStructureForTopic(topic: TopicName) {
   return GAME_MAP_STRUCTURE.find(t => t.topicName === topic);
 }
 
-function getMaxLevelIdForTopic(topicName: TopicName) {
-  const topic = getStructureForTopic(topicName);
-  return topic.levels[topic.levels.length - 1].order;
-}
-
 function simpleFormulaTestGenerator(
   maxDigit: number,
 ): FormulaTest {
@@ -272,11 +267,11 @@ function findMinLevelToDoOperation(
 
 function generateTopicFormulas(
   topic: TopicName,
-  testFunctionGenerator: (any) => FormulaTest,
+  testFunctionGenerator: (number) => FormulaTest,
 ): Formula[] {
-  return GAME_MAP_STRUCTURE.find(t => t.topicName === topic).levels
+  return getStructureForTopic(topic).levels
     .map(l => ({
-      test: testFunctionGenerator(+l.levelName),
+      test: testFunctionGenerator(l.levelName),
       minLevelId: l.order,
     }));
 }
