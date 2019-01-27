@@ -1,8 +1,16 @@
 import { Router } from 'express';
 import { User, IUserModel, Task } from '../models';
-import { IUser, UserRole, ILevel } from '../interfaces';
-import { setGameMap } from '../utils/gameMap';
-import { Topic } from '../models/Topic';
+import { IUser, UserRole, TopicName, TopicType } from '../interfaces';
+
+function getTopicType(topicName: TopicName): TopicType {
+  if (topicName === TopicName.MULTIPLICATION) {
+    return TopicType.MULTIPLICATION;
+  }
+  if (topicName === TopicName.DIVISION) {
+    return TopicType.DIVISION;
+  }
+  return TopicType.PLUS_MINUS;
+}
 
 const router = Router();
 
@@ -63,56 +71,28 @@ router.put('/users/:id', (req, res) => {
 
 router.get('/tasks', (req, res) => {
   const userId = req.query['userId'];
+  const topicType = req.query['topicType'];
   const tasksPerPage = 100;
   if (!userId) {
     return res.status(400).send('userId is not present');
   }
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        return res.status(400).send(`No user with id ${userId}`);
-      }
-      return Task
-        .find({ userId })
-        .sort({ createdAt: -1 })
-        .limit(tasksPerPage)
-        .then(tasks => res.json(tasks));
-    })
-    .catch(err => res.send(err));
-});
 
-router.get('/map/:topicName/:levelName', async(req, res) => {
-  const topicName = req.params['topicName'];
-  const levelName = req.params['levelName'];
-  const topic = await Topic.findOne({ topicName });
-  if (topic) {
-    const level = topic.levels.find(l => l.levelName === levelName);
-    if (!level) {
-      res.sendStatus(404);
-    } else {
-      res.json(level);
-    }
-  } else {
-    res.sendStatus(404);
-  }
-});
-
-router.put('/map/:topicName/:levelName', async(req, res) => {
-  const level: ILevel = <ILevel>req.body;
-  const topicName = req.params['topicName'];
-  const levelName = req.params['levelName'];
-  const topic = await Topic.findOne({ topicName });
-  if (!topic) {
-    return res.sendStatus(404);
-  }
-  const levelInd = topic.levels.findIndex(level => level.levelName === levelName);
-  if (levelInd === -1) {
-    return res.sendStatus(404);
-  }
-  topic.levels[levelInd] = level;
-  await Topic.findOneAndUpdate({ topicName }, topic);
-  setGameMap(await Topic.find({}));
-  res.json(level);
+  return Task
+    // .find({
+    //   userId,
+    //   $or: [
+    //     { topicType },
+    //     {
+    //       topicType: {
+    //         $exists: topicType !== TopicType.PLUS_MINUS,
+    //       },
+    //     }
+    //   ]
+    // })
+    .find({ userId })
+    .sort({ createdAt: -1 })
+    .limit(tasksPerPage)
+    .then(tasks => res.json(tasks));
 });
 
 export default router;

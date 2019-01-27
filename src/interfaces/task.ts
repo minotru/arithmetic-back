@@ -5,6 +5,7 @@ export interface ITaskConfig {
   operationsCnt?: number;
   speed?: number;
   withRemainder?: boolean;
+  topicType?: TopicType;
 }
 
 export interface IOperation {
@@ -17,6 +18,12 @@ export interface ITask {
   config: ITaskConfig;
   isCorrect?: boolean;
   createdAt: Date;
+}
+
+export enum TopicType {
+  PLUS_MINUS = 'plus_minus',
+  MULTIPLICATION = 'multiplication',
+  DIVISION = 'division',
 }
 
 export enum OperationType {
@@ -34,38 +41,3 @@ export enum TopicName {
   MULTIPLICATION = 'multiplication',
   DIVISION = 'division',
 }
-
-export enum RulesType {
-  ALLOWED = 'allowed',
-  FORBIDDEN = 'forbidden',
-}
-
-export interface IRange {
-  from: number;
-  to: number;
-}
-
-export interface IRule {
-  values: IRange[];
-  ranges: IRange[];
-}
-
-export interface IRulesByOperation {
-  rulesType: RulesType;
-  rules: IRule[];
-}
-
-export interface ILevel {
-  levelName: string;
-  order: number;
-  maxDigit: number;
-  [OperationType.MINUS]: IRulesByOperation;
-  [OperationType.PLUS]: IRulesByOperation;
-}
-
-export interface ITopic {
-  topicName: TopicName;
-  levels: ILevel[];
-}
-
-export type IGameMap = ITopic[];

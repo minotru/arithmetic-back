@@ -18,6 +18,7 @@ const taskSchema = new Schema(
     config: {
       digitsCnt: Number,
       topic: String,
+      topicType: String,
       level: Number,
       operationsCnt: Number,
       speed: Number,
