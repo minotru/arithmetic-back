@@ -15,7 +15,6 @@ export interface IOperation {
 export interface ITask {
   userId?: string;
   config: ITaskConfig;
-  answer: number;
   isCorrect?: boolean;
   createdAt: Date;
 }

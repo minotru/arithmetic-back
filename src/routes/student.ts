@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { ITaskConfig } from '../interfaces';
-import { Task, ITaskModel } from '../models';
+import { Task } from '../models';
 import { generateTaskOperations } from '../utils/taskGenerator';
 
 const router = Router();
@@ -11,34 +11,35 @@ router.post('/tasks', (req, res) => {
   const { operations, answer } = generateTaskOperations(taskConfig);
   const task = new Task({
     userId,
-    answer,
     config: taskConfig,
     isCorrect: false,
   });
   task.save()
     .then((task) => {
-      res.json({
-        task,
-        operations,
-      });
+      res.json(Object.assign(
+        {},
+        task.toObject(),
+        {
+          operations,
+          answer,
+        },
+      ));
     })
     .catch(err => res.send(err));
 });
 
 router.post('/tasks/:taskId', (req, res) => {
   const taskId = req.params['taskId'];
-  const userAnswer = req.body['answer'];
+  const { isCorrect } = req.body;
   Task.findById(taskId)
     .then((task) => {
       if (!task) {
         return res.sendStatus(404);
       }
-      task.isCorrect = task.answer === userAnswer;
+      task.isCorrect = isCorrect;
       return task
         .save()
-        .then(
-          task => res.json(task),
-        );
+        .then(() => res.json());
     })
     .catch(err => res.send(err));
 });

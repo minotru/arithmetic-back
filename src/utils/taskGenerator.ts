@@ -8,7 +8,7 @@ import { GAME_MAP_STRUCTURE } from '../gameMapStructure';
 
 export interface ITaskGenerationResult {
   operations: IOperation[];
-  answer: number;
+  answer: number[];
 }
 
 type CanDoTable = {
@@ -315,12 +315,76 @@ export function generateTaskOperations(taskConfig: ITaskConfig): ITaskGeneration
   return generatePlusMinusTaskOperations(taskConfig);
 }
 
+function extractDigitsCntFromLevel(level: number): {
+  leftCnt: number,
+  rightCnt: number,
+} {
+  return {
+    leftCnt: +level.toString()[0],
+    rightCnt: +level.toString()[1],
+  };
+}
+
+function generateRandomNumber(digitsCnt: number): number {
+  return Math.max(
+    Math.min(
+      Math.trunc(Math.random() * Math.pow(10, digitsCnt)),
+      Math.pow(10, digitsCnt + 1) - 1,
+    ),
+    1,
+  );
+}
+
 function generateMulTaskOperations(taskConfig: ITaskConfig): ITaskGenerationResult {
-  return {} as ITaskGenerationResult;
+  const { leftCnt, rightCnt } = extractDigitsCntFromLevel(taskConfig.level);
+  const left = generateRandomNumber(leftCnt);
+  const right = generateRandomNumber(rightCnt);
+  return {
+    operations: [
+      {
+        operand: left,
+        operationType: OperationType.PLUS,
+      },
+      {
+        operand: right,
+        operationType: OperationType.MULTIPLY,
+      },
+    ],
+    answer: [left * right],
+  };
 }
 
 function generateDivTaskOperations(taskConfig: ITaskConfig): ITaskGenerationResult {
-  return {} as ITaskGenerationResult;
+  const { leftCnt, rightCnt } = extractDigitsCntFromLevel(taskConfig.level);
+  let left = generateRandomNumber(leftCnt);
+  let right = generateRandomNumber(rightCnt);
+  if (left < right) {
+    const tmp = left;
+    left = right;
+    right = tmp;
+  }
+  const quotient = Math.trunc(left / right);
+  const remainder = left - quotient * right;
+  let answer: number[];
+  if (taskConfig.withRemainder) {
+    answer = [quotient, remainder];
+  } else {
+    left = left - remainder;
+    answer = [quotient];
+  }
+  return {
+    answer,
+    operations: [
+      {
+        operand: left,
+        operationType: OperationType.PLUS,
+      },
+      {
+        operand: right,
+        operationType: OperationType.DIVIDE,
+      },
+    ],
+  };
 }
 
 function getRandomElement<T>(arr: T[]): T {
@@ -400,7 +464,7 @@ function generatePlusMinusTaskOperations(
 
   return {
     operations,
-    answer: currentValue,
+    answer: [currentValue],
   };
 }
 
